@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../libraries/Helpers.sol";
-import "../utils/Errors.sol";
+import "../globals/Errors.sol";
 
 abstract contract Helpers {
     modifier positiveAddress(address addr) {

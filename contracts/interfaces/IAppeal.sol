@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
-
+import "../globals/Types.sol";
 abstract contract IAppeal {
     enum AppealDecision {
         unvoted,
@@ -15,4 +15,13 @@ abstract contract IAppeal {
         AppealDecision appealDecision;
         uint256 createdAt;
     }
+
+    event OrderCancelled(uint256  orderId, OrderState  status);
+    event OrderAppealed(
+        uint256  orderId,
+        uint256  appealId,
+        address  appealer,
+        AppealDecision appealDecision,
+        OrderState status
+    );
 }

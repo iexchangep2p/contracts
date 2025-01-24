@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../interfaces/IExchangeP2P.sol";
+import "../interfaces/IExchange.sol";
+import "../globals/Types.sol";
 
 struct OrderStore {
-    mapping(uint256 => IExchangeP2P.Order) orders;
+    mapping(address => StakeToken) stakeToken; // token address -> StakeToken
+    mapping(address => IExchange.Merchant) merchant; // merchant address -> Merchant
+    mapping(uint256 => IExchange.Order) orders;
     uint256 orderId;
-    address merchantStakeToken; // address
-    uint256 merchantStakeAmount; // usdc amount to stake to become a merchant
-    uint256 concurrentMerchantSettlements; // # of concurrent transactions a merchant is allowed to handle
+    uint256 maxConcurrentOrders; // # of concurrent transactions a merchant is allowed to handle
     uint256 minPaymentTimeLimit; // in minutes
     uint256 maxPaymentTimeLimit; // in minutes
 }
@@ -26,7 +27,7 @@ library OrderStorage {
 }
 
 struct AppealStore {
-    mapping(uint256 => IExchangeP2P.Appeal) appeals;
+    mapping(uint256 => IExchange.Appeal) appeals;
     uint256 appealId;
 }
 
@@ -43,7 +44,7 @@ library AppealStorage {
 }
 
 struct KYCStore {
-    mapping(address => IExchangeP2P.KYCLevel) kyc;
+    mapping(address => IExchange.KYCLevel) kyc;
 }
 
 library KYCStorage {
@@ -58,7 +59,7 @@ library KYCStorage {
 }
 
 struct AMLStore {
-    mapping(address => IExchangeP2P.Blacklist) blacklist;
+    mapping(address => IExchange.Blacklist) blacklist;
     uint256 minRemovePeriod; // when address is added to a blacklist it can't be removed until after this period
 }
 

@@ -8,10 +8,10 @@ import {
   INIT_SIG,
 } from "../lib";
 
-const IExchangeModule = buildModule("IExchangeModule", (m) => {
+const IExchangeDiamondModule = buildModule("IExchangeDiamondModule", (m) => {
   const owner = m.getAccount(0);
   const dc = m.contract("DiamondCutFacet");
-  const iExchange = m.contract("IExchange", [owner, dc]);
+  const iExchangeP2P = m.contract("IExchangeP2P", [owner, dc]);
 
   const diS = functionSigsSelectors("DiamondInit");
   const di = m.contract("DiamondInit");
@@ -25,8 +25,8 @@ const IExchangeModule = buildModule("IExchangeModule", (m) => {
   const dl = m.contract("DiamondLoupeFacet");
   const dlC = [dl, FacetCutAction.Add, Object.values(dlS)];
 
-  const cutProxy = m.contractAt("DiamondCutFacet", iExchange, {
-    id: "IExchangeDiamondCutFacet",
+  const cutProxy = m.contractAt("DiamondCutFacet", iExchangeP2P, {
+    id: "IExchangeP2PDiamondCutFacet",
   });
 
   m.call(cutProxy, "diamondCut", [[oC, dlC], diInit.contract, diInit.selector]);
@@ -43,11 +43,11 @@ const IExchangeModule = buildModule("IExchangeModule", (m) => {
     id: "AccessControlDiamondCut",
   });
 
-  const acProxy = m.contractAt("AccessControlFacet", iExchange, {
-    id: "IExchangeAccessControl",
+  const acProxy = m.contractAt("AccessControlFacet", iExchangeP2P, {
+    id: "IExchangeP2PAccessControl",
   });
 
-  return { iExchange, cutProxy, acProxy };
+  return { iExchangeP2P, cutProxy, acProxy };
 });
 
-export default IExchangeModule;
+export default IExchangeDiamondModule;

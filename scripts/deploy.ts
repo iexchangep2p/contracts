@@ -1,8 +1,8 @@
 import { ignition } from "hardhat";
-import IExchangeModule from "../ignition/modules/IExchange";
+import IExchangeP2PModule from "../ignition/modules/IExchangeP2P";
 
 async function main() {
-  await ignition.deploy(IExchangeModule, { displayUi: true });
+  await ignition.deploy(IExchangeP2PModule, { displayUi: true });
   console.log(`Deployments Successfull ...`);
 }
 

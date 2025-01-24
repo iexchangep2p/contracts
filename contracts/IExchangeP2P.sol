@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import "./diamond/Diamond.sol";
 
-contract IExchange is Diamond {
+contract IExchangeP2P is Diamond {
 
     constructor(
         address _contractOwner,
