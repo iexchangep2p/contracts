@@ -22,7 +22,7 @@ abstract contract IMerchant {
     /**
      * @notice  merchant unstaking
      * @dev     .
-     * @param   _token  toeken to unstake from
+     * @param   _token  token to unstake from
      */
     function unstake(address _token) external virtual;
     /**

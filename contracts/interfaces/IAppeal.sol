@@ -7,7 +7,6 @@ abstract contract IAppeal {
         release,
         cancel
     }
-
     struct Appeal {
         uint256 orderId;
         address appealer;
@@ -15,13 +14,14 @@ abstract contract IAppeal {
         AppealDecision appealDecision;
         uint256 createdAt;
     }
-
-    event OrderCancelled(uint256  orderId, OrderState  status);
+    event OrderCancelled(uint256 orderId, OrderState status);
     event OrderAppealed(
-        uint256  orderId,
-        uint256  appealId,
-        address  appealer,
+        uint256 orderId,
+        uint256 appealId,
+        address appealer,
         AppealDecision appealDecision,
         OrderState status
     );
+
+    function appealOrder(uint256 _orderId, bytes32 _reasonHash) external virtual;
 }

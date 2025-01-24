@@ -17,3 +17,8 @@ enum OrderType {
     buy,
     sell
 }
+struct MoneyConfig {
+    bool active;
+    uint256 buyLimit;
+    uint256 sellLimit;
+}

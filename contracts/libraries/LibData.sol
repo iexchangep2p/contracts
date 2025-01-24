@@ -6,6 +6,8 @@ import "../globals/Types.sol";
 
 struct OrderStore {
     mapping(address => StakeToken) stakeToken; // token address -> StakeToken
+    mapping(bytes => MoneyConfig) paymentMethod; // payment method bytes -> MoneyConfig
+    mapping(bytes => MoneyConfig) currency; // currency bytes -> MoneyConfig
     mapping(address => IExchange.Merchant) merchant; // merchant address -> Merchant
     mapping(uint256 => IExchange.Order) orders;
     uint256 orderId;
