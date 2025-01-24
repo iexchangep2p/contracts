@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0",
+    "@solidstate/contracts": "^0.0.61",
+    "hardhat": "^2.22.18"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "coverage": "hardhat coverage",
+    "test:gas": "REPORT_GAS=true hardhat test",
+    "test:local:gas": "REPORT_GAS=true bun run test:local",
+    "deploys": "hardhat ignition deployments",
+    "deploys:id": "hardhat ignition status",
+    "deploy:all": "hardhat run scripts/deploy.ts --network",
+    "deploy:main": "hardhat ignition deploy ignition/modules/IExchange.ts --verify --network",
+    "verify:all": "hardhat ignition verify"
+  }
+}
