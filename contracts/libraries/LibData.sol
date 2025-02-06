@@ -30,8 +30,7 @@ library OrderStorage {
 }
 
 struct AppealStore {
-    mapping(uint256 => IExchange.Appeal) appeals;
-    uint256 appealId;
+    mapping(bytes32 => IExchange.Appeal) appeals;
 }
 
 library AppealStorage {

@@ -9,13 +9,13 @@ import "./IMerchant.sol";
 import "../globals/Types.sol";
 abstract contract IExchangeView {
     function appeals(
-        address _address
+        bytes32 _orderHash
     ) external view virtual returns (IAppeal.Appeal memory);
     function paymentMethod(
-        bytes32 _address
+        bytes32 _method
     ) external view virtual returns (MoneyConfig memory);
     function currency(
-        bytes32 _address
+        bytes32 _currency
     ) external view virtual returns (MoneyConfig memory);
     function tradeToken(
         address _address
@@ -33,11 +33,8 @@ abstract contract IExchangeView {
     function KYCLevel(
         address _address
     ) external view virtual returns (IKYC.KYCLevel);
-    function minRemovePeriod() external view virtual returns (uint256);
-    function appealId() external view virtual returns (uint256);
     function minAMLRemovePeriod() external view virtual returns (uint256);
     function minPaymentTimeLimit() external view virtual returns (uint256);
     function maxConcurrentOrders() external view virtual returns (uint256);
     function maxPaymentTimeLimit() external view virtual returns (uint256);
-    function orderId() external view virtual returns (uint256);
 }

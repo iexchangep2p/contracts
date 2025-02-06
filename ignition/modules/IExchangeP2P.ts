@@ -36,34 +36,58 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   const ev = m.contract("ExchangeView");
   const evC = [ev, FacetCutAction.Add, Object.values(evS)];
 
+  const amS = functionSelectors("AML");
+  const am = m.contract("AML");
+  const amC = [am, FacetCutAction.Add, Object.values(amS)];
+
+  const kyS = functionSelectors("KYC");
+  const ky = m.contract("KYC");
+  const kyC = [ky, FacetCutAction.Add, Object.values(kyS)];
+
   m.call(
     cutProxy,
     "diamondCut",
-    [[oC, aC, emC, evC, mC], cpiInit.contract, cpiInit.selector],
+    [[oC, aC, emC, evC, mC, amC, kyC], cpiInit.contract, cpiInit.selector],
     { id: "IExchangeP2PDiamondCut" }
   );
 
-  const acMerchant = m.contractAt("Merchant", iExchangeP2P, {
+  const merchantProxy = m.contractAt("Merchant", iExchangeP2P, {
     id: "IExchangeP2PMerchant",
   });
 
-  const acOrder = m.contractAt("Order", iExchangeP2P, {
+  const orderProxy = m.contractAt("Order", iExchangeP2P, {
     id: "IExchangeP2POrder",
   });
 
-  const acAppeal = m.contractAt("Appeal", iExchangeP2P, {
+  const appealProxy = m.contractAt("Appeal", iExchangeP2P, {
     id: "IExchangeP2PAppeal",
   });
 
-  const acExchangeManager = m.contractAt("ExchangeManager", iExchangeP2P, {
+  const managerProxy = m.contractAt("ExchangeManager", iExchangeP2P, {
     id: "IExchangeP2PExchangeManager",
   });
 
-  const acExchangeView = m.contractAt("ExchangeView", iExchangeP2P, {
+  const viewProxy = m.contractAt("ExchangeView", iExchangeP2P, {
     id: "IExchangeP2PExchangeView",
   });
 
-  return { acMerchant, acOrder, acAppeal, acExchangeManager, acExchangeView };
+  const amlProxy = m.contractAt("AML", iExchangeP2P, {
+    id: "IExchangeP2PAML",
+  });
+
+  const kycProxy = m.contractAt("KYC", iExchangeP2P, {
+    id: "IExchangeP2PKYC",
+  });
+
+  return {
+    merchantProxy,
+    orderProxy,
+    appealProxy,
+    managerProxy,
+    viewProxy,
+    amlProxy,
+    kycProxy,
+  };
 });
 
 export default IExchangeP2PModule;
