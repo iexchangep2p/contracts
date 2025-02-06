@@ -38,4 +38,12 @@ library HelpersLib {
         }
         return keccak256(_bytes1) == keccak256(_bytes2);
     }
+
+    function chainId() internal view returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
+    }
 }

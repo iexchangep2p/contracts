@@ -6,10 +6,11 @@ import "../globals/Types.sol";
 
 struct OrderStore {
     mapping(address => StakeToken) stakeToken; // token address -> StakeToken
-    mapping(bytes => MoneyConfig) paymentMethod; // payment method bytes -> MoneyConfig
-    mapping(bytes => MoneyConfig) currency; // currency bytes -> MoneyConfig
+    mapping(bytes32 => MoneyConfig) paymentMethod; // payment method bytes -> MoneyConfig
+    mapping(bytes32 => MoneyConfig) currency; // currency bytes -> MoneyConfig
+    mapping(address => TradeToken) tradeToken; // currency bytes -> MoneyConfig
     mapping(address => IExchange.Merchant) merchant; // merchant address -> Merchant
-    mapping(uint256 => IExchange.Order) orders;
+    mapping(bytes32 => IExchange.Order) orders;
     uint256 orderId;
     uint256 maxConcurrentOrders; // # of concurrent transactions a merchant is allowed to handle
     uint256 minPaymentTimeLimit; // in minutes

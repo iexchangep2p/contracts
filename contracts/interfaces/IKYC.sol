@@ -28,8 +28,4 @@ abstract contract IKYC {
         address _address,
         KYCLevel _level
     ) external virtual;
-
-    function getKYCLevel(
-        address _address
-    ) external view virtual returns (KYCLevel);
 }

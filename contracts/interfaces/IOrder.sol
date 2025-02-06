@@ -4,49 +4,93 @@ pragma solidity ^0.8.28;
 import "../globals/Types.sol";
 
 abstract contract IOrder {
-    
-
     struct Order {
         address trader;
         address merchant;
+        uint256 traderChain;
+        uint256 merchantChain;
         address token;
-        bytes currency;
-        bytes paymentMethod;
-        bytes paymentConfig;
+        bytes32 currency;
+        bytes32 paymentMethod;
         OrderType orderType;
         OrderState orderState;
         uint256 quantity;
-        address depositAddress;
-        OrderState status;
+        uint256 deadline;
         uint256 createdAt;
     }
 
-    event NewMerchant(address  merchant);
-    event NewSettler(address  settler);
-    event NewTrader(address  trader);
-    event OfferDisabled(uint256  offerId, bool  active);
-    event OfferEnabled(uint256  offerId, bool  active);
-    event NewOrder(
-        uint256  orderId,
-        address  trader,
-        OrderType  orderType,
-        uint256 offerId,
-        uint256 quantity,
-        address depositAddress,
-        bytes32 accountHash,
-        uint256 appealId,
-        OrderState status
-    );
-    event OrderAccepted(uint256  orderId, OrderState  status);
-    event OrderPaid(uint256  orderId, OrderState  status);
-    event OrderReleased(uint256  orderId, OrderState  status);
-    
-    
+    struct CreateOrder {
+        address trader;
+        address merchant;
+        uint256 traderChain;
+        uint256 merchantChain;
+        address token;
+        bytes32 currency;
+        bytes32 paymentMethod;
+        OrderType orderType;
+        uint256 quantity;
+        uint256 expiry;
+        uint256 duration;
+    }
 
-    error MerchantConcurrencyReached(uint256 _count);
-    error InvalidMerchantStake(uint256 _stakeAmount);
-    error AcceptNotRequiredForSell();
+    event NewOrder(
+        bytes32 orderHash,
+        address trader,
+        address merchant,
+        uint256 traderChain,
+        uint256 merchantChain,
+        address token,
+        bytes32 currency,
+        bytes32 paymentMethod,
+        OrderType orderType,
+        uint256 quantity,
+        OrderState orderState,
+        uint256 deadline,
+        uint256 createdAt
+    );
+    event OrderAccepted(bytes32 orderHash, OrderState status);
+    event OrderPaid(bytes32 orderHash, OrderState status);
+    event OrderReleased(bytes32 orderHash, OrderState status);
+    event OrderCancelled(bytes32 orderHash, OrderState status);
+
     error UnsupportedCurrency();
     error UnsupportedPaymentMethod();
-    error OrderAlreadyAppealed();
+    error InvalidOrderCreateState();
+    error InvalidTradeToken();
+    error InvalidDuration();
+    error InvalidQuantity();
+    error OrderExists();
+    error OrderDoesNotExists();
+    error NotYetDeadline();
+    error InvalidExpiry();
+    error OrderExpired();
+    error OrderPendingRequired();
+    error OrderAcceptedRequired();
+    error OrderPendingOrAcceptedRequired();
+    error OrderPaidRequired();
+    error MustBeMerchant();
+    error MustBeTrader();
+
+    function createOrder(
+        CreateOrder calldata _order,
+        bytes calldata _traderSig,
+        bytes calldata _merchantSig
+    ) external virtual;
+
+    function acceptOrder(
+        bytes32 _orderHash,
+        bytes calldata _sig
+    ) external virtual;
+
+    function payOrder(bytes32 _orderHash, bytes calldata _sig) external virtual;
+
+    function releaseOrder(
+        bytes32 _orderHash,
+        bytes calldata _sig
+    ) external virtual;
+
+    function cancelOrder(
+        bytes32 _orderHash,
+        bytes calldata _sig
+    ) external virtual;
 }

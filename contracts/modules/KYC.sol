@@ -10,19 +10,13 @@ contract KYC is IKYC, IExchangeRoles {
         address _address,
         KYCLevel _level
     ) external virtual override onlyKycProvider {
-        LibKYC._upgrade(_address, _level);
+        LibKYC._upgrade(_address, _level, msg.sender);
     }
 
     function downgradeKYCLevel(
         address _address,
         KYCLevel _level
     ) external virtual override onlyKycProvider {
-        LibKYC._downgrade(_address, _level);
-    }
-
-    function getKYCLevel(
-        address _address
-    ) external view virtual override returns (KYCLevel) {
-        return LibKYC._get(_address);
+        LibKYC._downgrade(_address, _level, msg.sender);
     }
 }

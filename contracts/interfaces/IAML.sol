@@ -15,8 +15,4 @@ abstract contract IAML {
     function addBlacklist(address _address) external virtual;
 
     function removeBlacklist(address _address) external virtual;
-
-    function isBlacklisted(
-        address _address
-    ) external view virtual returns (bool);
 }

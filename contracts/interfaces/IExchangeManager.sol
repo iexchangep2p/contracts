@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 abstract contract IExchangeManager {
     event PaymentMethodAdded(address by, bytes method, bool active);
-    event PaymentMethodRemoved(address removedBy, bytes method, bool active);
+    event PaymentMethodRemoved(address by, bytes method, bool active);
     event CurrencyAdded(address by, bytes currency, bool active);
     event CurrencyRemoved(address by, bytes currency, bool active);
     event StakeTokenAdded(
@@ -23,6 +23,11 @@ abstract contract IExchangeManager {
         uint256 _stakeAmount
     ) external virtual;
     function removeStakeToken(address _token) external virtual;
+    function addTradeToken(
+        address _token,
+        uint256 _stakeAmount
+    ) external virtual;
+    function removeTradeToken(address _token) external virtual;
     function addPaymentMethod(bytes memory _paymentMethod) external virtual;
     function removePaymentMethod(bytes memory _paymentMethod) external virtual;
     function addCurrency(bytes memory _currency) external virtual;

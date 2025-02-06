@@ -8,10 +8,22 @@ abstract contract IMerchant {
         bool active;
         address owner;
         StakeToken stakeToken;
+        uint256 concurrentOrders;
     }
 
     event MerchantStaked(address merchant, address token, uint256 amount);
     event MerchantUnstaked(address merchant, address token, uint256 amount);
+    event MerchantAddedAddress(address merchant, address addr);
+    event MerchantRemovedAddress(address merchant, address addr);
+
+    error InactiveMerchant();
+    error InvalidMerchantStake();
+    error MerchantConcurrencyReached();
+    error MerchantHasActiveOrders();
+    error InvalidStakeToken();
+    error MerchantAlreadStaked();
+    error MerchantNotAddressOwner();
+    error AddressAlreadyMerchant();
 
     /**
      * @notice  merchant staking
