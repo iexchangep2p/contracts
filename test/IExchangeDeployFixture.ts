@@ -3,7 +3,7 @@ import { ethers, ignition } from "hardhat";
 
 import IgniteTestModule from "../ignition/modules/IgniteTest";
 
-async function deployIExchange() {
+export async function deployIExchange() {
   const [owner, kofiMerchant, amaTrader, yaa] = await ethers.getSigners();
 
   const {
