@@ -61,9 +61,7 @@ library LibOrder {
         ) {
             revert IOrder.InvalidDuration();
         }
-        IMerchant.Merchant storage merchant = LibMerchant._getMerchant(
-            _order.merchant
-        );
+        IMerchant.Merchant storage merchant = LibMerchant._get(_order.merchant);
         if (merchant.concurrentOrders >= o.maxConcurrentOrders) {
             revert IMerchant.MerchantConcurrencyReached();
         }
