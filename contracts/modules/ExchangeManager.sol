@@ -5,7 +5,9 @@ import "../diamond/interfaces/IExchangeRoles.sol";
 
 import "../libraries/LibData.sol";
 import "../globals/Errors.sol";
-contract ExchangeManager is IExchangeManager, IExchangeRoles {
+import "../globals/Helpers.sol";
+import "../globals/Types.sol";
+contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
     function addStakeToken(
         address _token,
         uint256 _stakeAmount
@@ -40,24 +42,77 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles {
         uint256 _orderFee,
         uint256 _collectedFees,
         uint256 _stakeAmount
-    ) external virtual override onlyIExchangeManager {}
+    )
+        external
+        virtual
+        override
+        onlyIExchangeManager
+        nonZero(_buyLimit)
+        nonZero(_sellLimit)
+        positiveAddress(_crossChainHandler)
+        nonZero(_orderFee)
+        nonZero(_collectedFees)
+        nonZero(_stakeAmount)
+    {
+        OrderStore storage o = OrderStorage.load();
+        if (o.tradeToken[_token].active) {
+            revert TradeTokenExists();
+        }
+        o.tradeToken[_token] = TradeToken({
+            active: true,
+            buyLimit: _buyLimit,
+            sellLimit: _sellLimit,
+            crossChainHandler: _crossChainHandler,
+            orderFee: _orderFee,
+            collectedFees: _collectedFees,
+            stakeAmount: _stakeAmount
+        });
+        emit TradeTokenAdded(
+            msg.sender,
+            _token,
+            o.tradeToken[_token].buyLimit,
+            o.tradeToken[_token].sellLimit,
+            o.tradeToken[_token].crossChainHandler,
+            o.tradeToken[_token].orderFee,
+            o.tradeToken[_token].collectedFees,
+            o.tradeToken[_token].stakeAmount
+        );
+    }
 
     function removeTradeToken(
         address _token
     ) external virtual override onlyIExchangeManager {
         OrderStore storage o = OrderStorage.load();
         if (o.stakeToken[_token].token == _token) {
-            revert StakeTokenDoesNotExists();
+            revert TradeTokenDoesNotExists();
         }
         delete o.stakeToken[_token];
-        emit StakeTokenRemoved(msg.sender, _token);
+        emit TradeTokenRemoved(msg.sender, _token);
     }
 
     function addPaymentMethod(
         bytes memory _paymentMethod,
         uint256 _buyLimit,
         uint256 _sellLimit
-    ) external virtual override {}
+    ) external virtual override {
+        OrderStore storage o = OrderStorage.load();
+        bytes32 methodHash = keccak256(_paymentMethod);
+        if (o.paymentMethod[methodHash].active) {
+            revert PaymentMethodExist();
+        }
+        o.paymentMethod[methodHash] = MoneyConfig({
+            active: true,
+            buyLimit: _buyLimit,
+            sellLimit: _sellLimit,
+            value: _paymentMethod
+        });
+        emit PaymentMethodAdded(
+            msg.sender,
+            methodHash,
+            o.paymentMethod[methodHash].buyLimit,
+            o.paymentMethod[methodHash].sellLimit
+        );
+    }
 
     function removePaymentMethod(
         bytes32 _methodHash
@@ -74,7 +129,25 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles {
         bytes memory _currency,
         uint256 _buyLimit,
         uint256 _sellLimit
-    ) external virtual override {}
+    ) external virtual override {
+        OrderStore storage o = OrderStorage.load();
+        bytes32 methodHash = keccak256(_currency);
+        if (o.currency[methodHash].active) {
+            revert CurrencyExist();
+        }
+        o.paymentMethod[methodHash] = MoneyConfig({
+            active: true,
+            buyLimit: _buyLimit,
+            sellLimit: _sellLimit,
+            value: _currency
+        });
+        emit CurrencyAdded(
+            msg.sender,
+            methodHash,
+            o.paymentMethod[methodHash].buyLimit,
+            o.paymentMethod[methodHash].sellLimit
+        );
+    }
 
     function removeCurrency(bytes32 _currencyHash) external virtual override {
         OrderStore storage o = OrderStorage.load();

@@ -2,21 +2,46 @@
 pragma solidity ^0.8.28;
 
 abstract contract IExchangeManager {
-    event PaymentMethodAdded(address by, bytes32 method);
+    event PaymentMethodAdded(
+        address by,
+        bytes32 method,
+        uint256 buyLimit,
+        uint256 sellLimit
+    );
     event PaymentMethodRemoved(address by, bytes32 method);
-    event CurrencyAdded(address by, bytes32 currency);
+    event CurrencyAdded(
+        address by,
+        bytes32 currency,
+        uint256 buyLimit,
+        uint256 sellLimit
+    );
     event CurrencyRemoved(address by, bytes32 currency);
     event StakeTokenAdded(address by, address token, uint256 amount);
     event StakeTokenRemoved(address by, address token);
+    event TradeTokenRemoved(address by, address token);
+    event TradeTokenAdded(
+        address by,
+        address token,
+        uint256 buyLimit,
+        uint256 sellLimit,
+        address crossChainHandler,
+        uint256 orderFee,
+        uint256 collectedFees,
+        uint256 stakeAmount
+    );
     event AMLMinRemovePeriodSet(address by, uint256 val);
     event MinPaymentTimeLimitSet(address by, uint256 val);
     event MaxConcurrentOrdersSet(address by, uint256 val);
     event MaxPaymentTimeLimitSet(address by, uint256 val);
     error StakeTokenExists();
     error StakeTokenDoesNotExists();
+    error TradeTokenExists();
+    error TradeTokenDoesNotExists();
     error InvalidStakeAmount();
     error PaymentMethodDoesNotExist();
     error CurrencyDoesNotExist();
+    error PaymentMethodExist();
+    error CurrencyExist();
     function addStakeToken(
         address _token,
         uint256 _stakeAmount
