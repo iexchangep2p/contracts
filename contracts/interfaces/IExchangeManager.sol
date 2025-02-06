@@ -24,19 +24,24 @@ abstract contract IExchangeManager {
     function removeStakeToken(address _token) external virtual;
     function addTradeToken(
         address _token,
+        uint256 _buyLimit,
+        uint256 _sellLimit,
+        address _crossChainHandler,
+        uint256 _orderFee,
+        uint256 _collectedFees,
         uint256 _stakeAmount
     ) external virtual;
     function removeTradeToken(address _token) external virtual;
     function addPaymentMethod(
         bytes memory _paymentMethod,
-        uint256 buyLimit,
-        uint256 sellLimit
+        uint256 _buyLimit,
+        uint256 _sellLimit
     ) external virtual;
     function removePaymentMethod(bytes32 _methodHash) external virtual;
     function addCurrency(
         bytes memory _currency,
-        uint256 buyLimit,
-        uint256 sellLimit
+        uint256 _buyLimit,
+        uint256 _sellLimit
     ) external virtual;
     function removeCurrency(bytes32 _currencyHash) external virtual;
     function setAMLMinRemovePeriod(uint256 _val) external virtual;
