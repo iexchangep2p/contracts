@@ -11,7 +11,6 @@ struct OrderStore {
     mapping(address => TradeToken) tradeToken; // currency bytes -> MoneyConfig
     mapping(address => IExchange.Merchant) merchant; // merchant address -> Merchant
     mapping(bytes32 => IExchange.Order) orders;
-    uint256 orderId;
     uint256 maxConcurrentOrders; // # of concurrent transactions a merchant is allowed to handle
     uint256 minPaymentTimeLimit; // in minutes
     uint256 maxPaymentTimeLimit; // in minutes
