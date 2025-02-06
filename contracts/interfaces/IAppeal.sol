@@ -8,27 +8,27 @@ abstract contract IAppeal {
         cancel
     }
     struct Appeal {
-        uint256 orderId;
+        bytes32 orderHash;
         address appealer;
-        bytes32 reasonHash;
         AppealDecision appealDecision;
         uint256 createdAt;
     }
     event OrderAppealed(
-        uint256 orderId,
-        uint256 appealId,
+        bytes32 orderHash,
         address appealer,
         AppealDecision appealDecision,
-        OrderState status
+        OrderState orderState,
+        uint256 createdAt
     );
     error OrderAlreadyAppealed();
 
-    function appealOrder(bytes32 _orderHash) external virtual;
+    function appealOrder(
+        bytes32 _orderHash,
+        bytes calldata _sig
+    ) external virtual;
 
     function settleAppeal(
         bytes32 _orderHash,
         AppealDecision _appealDecision
     ) external virtual;
-
-    
 }

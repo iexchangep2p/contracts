@@ -70,6 +70,7 @@ abstract contract IOrder {
     error OrderPaidRequired();
     error MustBeMerchant();
     error MustBeTrader();
+    error MustBeMerchantOrTrader();
 
     function createOrder(
         CreateOrder calldata _order,
