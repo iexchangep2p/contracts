@@ -67,15 +67,15 @@ library LibOrder {
         if (merchant.concurrentOrders >= o.maxConcurrentOrders) {
             revert IMerchant.MerchantConcurrencyReached();
         }
-        if (o.stakeToken[merchant.stakeToken.token].token == address(0)) {
-            revert IMerchant.InvalidStakeToken();
-        }
-        if (
-            merchant.stakeToken.stakeAmount <
-            o.stakeToken[merchant.stakeToken.token].stakeAmount
-        ) {
-            revert IMerchant.InvalidMerchantStake();
-        }
+        // if (o.stakeToken[merchant.stakeToken.token].token == address(0)) {
+        //     revert IMerchant.InvalidStakeToken();
+        // }
+        // if (
+        //     merchant.stakeToken.stakeAmount <
+        //     o.stakeToken[merchant.stakeToken.token].stakeAmount
+        // ) {
+        //     revert IMerchant.InvalidMerchantStake();
+        // }
         o.orders[_orderHash] = IOrder.Order({
             trader: _order.trader,
             merchant: _order.merchant,
