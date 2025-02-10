@@ -12,7 +12,7 @@ contract Order is IOrder {
     ) external virtual override {
         if (!HelpersLib.compareBytes(_traderSig, HelpersLib.emptyBytes)) {}
         OrderState state;
-        bytes32 _orderHash = LibSig._harshOrder(_order);
+        bytes32 _orderHash = LibSig._hashOrderEIP712(_order);
         address trader = LibSig._signer(_orderHash, _traderSig);
         if (_order.trader != trader) {
             revert InvalidSigner();
