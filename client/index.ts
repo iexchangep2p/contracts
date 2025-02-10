@@ -30,8 +30,11 @@ import "dotenv/config";
     quantity,
     orderType
   );
-  const orderHash = createOrderHash(order);
+
   const sigchain = orderSigChain(order);
+  const orderHash = createOrderHash(order, process.env.DUMMY_P2P!, sigchain);
+  console.log(orderHash);
+  
   const traderSig = await signOrder(
     order,
     traderWallet,

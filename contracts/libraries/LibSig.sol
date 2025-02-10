@@ -18,7 +18,7 @@ library LibSig {
         return ECDSA.recover(_hash, _signature);
     }
 
-    function _harshOrder(
+    function _hashOrder(
         IOrder.CreateOrder calldata _order
     ) internal returns (bytes32) {}
 

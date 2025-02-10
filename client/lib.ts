@@ -58,8 +58,16 @@ export function encodedCreateOrder(): TypedDataEncoder {
   });
 }
 
-export function createOrderHash(order: CreateOrder): string {
-  return encodedCreateOrder().hashStruct("CreateOrder", order);
+export function createOrderHash(
+  order: CreateOrder,
+  verifyingContract: string,
+  chainId: number
+): string {
+  return TypedDataEncoder.hash(
+    iexDomain(chainId, verifyingContract),
+    encodedCreateOrder().types,
+    order
+  );
 }
 
 export function iexDomain(
