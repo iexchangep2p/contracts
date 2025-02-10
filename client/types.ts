@@ -15,13 +15,13 @@ export enum OrderType {
 export type CreateOrder = {
   trader: string;
   merchant: string;
-  traderChain: number;
-  merchantChain: number;
+  traderChain: BigInt;
+  merchantChain: BigInt;
   token: string;
   currency: string;
   paymentMethod: string;
   orderType: OrderType;
-  quantity: number;
-  expiry: number;
-  duration: number;
+  quantity: BigInt;
+  expiry: BigInt;
+  duration: BigInt;
 };

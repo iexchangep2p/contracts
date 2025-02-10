@@ -2,6 +2,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^5.2.0",
     "@solidstate/contracts": "^0.0.61",
+    "dotenv": "^16.4.7",
     "hardhat": "^2.22.18"
   },
   "devDependencies": {
