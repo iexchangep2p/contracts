@@ -7,6 +7,7 @@ import {
 } from "ethers";
 import { CreateOrder, OrderType } from "./types";
 
+// https://docs.ethers.org/v6/api/hashing/#TypedDataEncoder
 export function encodedCreateOrder(): TypedDataEncoder {
   return new TypedDataEncoder({
     CreateOrder: [
@@ -69,7 +70,7 @@ export function createOrderHash(
     order
   );
 }
-
+// 
 export function iexDomain(
   chainId: number,
   verifyingContract: string
@@ -81,7 +82,7 @@ export function iexDomain(
     version: keccak256(toUtf8Bytes("v2")),
   };
 }
-
+// https://docs.ethers.org/v6/api/providers/#Signer-signTypedData
 export async function signOrder(
   order: CreateOrder,
   signer: Signer,
