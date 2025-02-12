@@ -6,55 +6,29 @@ import "../libraries/LibOrder.sol";
 import "../libraries/LibSig.sol";
 contract Order is IOrder {
     function createOrder(
-        CreateOrder calldata _order,
-        bytes calldata _traderSig,
-        bytes calldata _merchantSig
+        CreateOrder calldata _order
     ) external virtual override {
-        if (!HelpersLib.compareBytes(_traderSig, HelpersLib.emptyBytes)) {}
-        OrderState state;
         bytes32 _orderHash = LibSig._hashOrderEIP712(_order);
-        address trader = LibSig._signer(_orderHash, _traderSig);
-        if (_order.trader != trader) {
+        if (_order.trader != msg.sender) {
             revert InvalidSigner();
         }
-        if (HelpersLib.compareBytes(_merchantSig, HelpersLib.emptyBytes)) {
-            state = OrderState.pending;
-        } else {
-            address merchant = LibSig._signer(_orderHash, _merchantSig);
-            if (_order.merchant != merchant) {
-                revert InvalidSigner();
-            }
-            state = OrderState.accepted;
-        }
 
-        LibOrder._createOrder(_order, _orderHash, state);
+        LibOrder._createOrder(_order, _orderHash, OrderState.pending);
     }
 
-    function acceptOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual override {
-        LibOrder._acceptOrder(_orderHash, LibSig._signer(_orderHash, _sig));
+    function acceptOrder(bytes32 _orderHash) external virtual override {
+        LibOrder._acceptOrder(_orderHash, msg.sender);
     }
 
-    function payOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual override {
-        LibOrder._payOrder(_orderHash, LibSig._signer(_orderHash, _sig));
+    function payOrder(bytes32 _orderHash) external virtual override {
+        LibOrder._payOrder(_orderHash, msg.sender);
     }
 
-    function releaseOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual override {
-        LibOrder._releaseOrder(_orderHash, LibSig._signer(_orderHash, _sig));
+    function releaseOrder(bytes32 _orderHash) external virtual override {
+        LibOrder._releaseOrder(_orderHash, msg.sender);
     }
 
-    function cancelOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual override {
-        LibOrder._cancelOrder(_orderHash, LibSig._signer(_orderHash, _sig));
+    function cancelOrder(bytes32 _orderHash) external virtual override {
+        LibOrder._cancelOrder(_orderHash, msg.sender);
     }
 }

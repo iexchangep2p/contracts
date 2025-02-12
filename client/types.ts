@@ -25,3 +25,17 @@ export type CreateOrder = {
   expiry: BigInt;
   duration: BigInt;
 };
+
+export enum OrderMethod {
+  accept,
+  pay,
+  release,
+  cancel,
+  appeal,
+}
+
+export type OrderMethodPayload = {
+  orderHash: string;
+  method: OrderMethod;
+  expiry: BigInt;
+};

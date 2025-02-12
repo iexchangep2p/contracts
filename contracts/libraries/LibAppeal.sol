@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import "../libraries/LibData.sol";
+import "../globals/Errors.sol";
 
 library LibAppeal {
     function _get(
@@ -41,5 +42,13 @@ library LibAppeal {
             o.orders[_orderHash].orderState,
             a.appeals[_orderHash].createdAt
         );
+    }
+
+    function _settle(
+        bytes32 _orderHash,
+        IAppeal.AppealDecision _appealDecision,
+        address _caller
+    ) internal {
+        revert NotImplemented();
     }
 }

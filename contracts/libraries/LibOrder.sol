@@ -30,12 +30,6 @@ library LibOrder {
         if (_order.merchantChain < 1) {
             revert InvalidChainId();
         }
-        if (_order.duration < 1) {
-            revert IOrder.InvalidDuration();
-        }
-        if (_order.expiry < 1) {
-            revert IOrder.InvalidExpiry();
-        }
         if (_order.expiry < block.timestamp) {
             revert IOrder.OrderExpired();
         }

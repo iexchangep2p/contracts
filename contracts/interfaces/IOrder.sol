@@ -72,26 +72,13 @@ abstract contract IOrder {
     error MustBeTrader();
     error MustBeMerchantOrTrader();
 
-    function createOrder(
-        CreateOrder calldata _order,
-        bytes calldata _traderSig,
-        bytes calldata _merchantSig
-    ) external virtual;
+    function createOrder(CreateOrder calldata _order) external virtual;
 
-    function acceptOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual;
+    function acceptOrder(bytes32 _orderHash) external virtual;
 
-    function payOrder(bytes32 _orderHash, bytes calldata _sig) external virtual;
+    function payOrder(bytes32 _orderHash) external virtual;
 
-    function releaseOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual;
+    function releaseOrder(bytes32 _orderHash) external virtual;
 
-    function cancelOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual;
+    function cancelOrder(bytes32 _orderHash) external virtual;
 }

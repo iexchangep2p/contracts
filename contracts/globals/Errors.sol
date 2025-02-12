@@ -10,3 +10,5 @@ error ZeroAddress();
 error ZeroNumber();
 error InvalidChainId();
 error InvalidSigner();
+error InvalidSignature();
+error SignatureExpired();

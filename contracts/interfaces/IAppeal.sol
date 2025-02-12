@@ -22,10 +22,7 @@ abstract contract IAppeal {
     );
     error OrderAlreadyAppealed();
 
-    function appealOrder(
-        bytes32 _orderHash,
-        bytes calldata _sig
-    ) external virtual;
+    function appealOrder(bytes32 _orderHash) external virtual;
 
     function settleAppeal(
         bytes32 _orderHash,
