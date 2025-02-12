@@ -29,6 +29,9 @@ export async function deployIExchange() {
   const orderFeeBasis = 100;
   const currency = ethers.toUtf8Bytes("ECO");
   const paymentMethod = ethers.toUtf8Bytes("ECOPAY");
+  const oneGrandNumber = 1000;
+  const hardhatNetwork = await ethers.provider.getNetwork();
+  const chainId = Number(hardhatNetwork.chainId);
 
   const USDT = await ethers.getContractFactory("TokenCutter");
   const usdt = await USDT.deploy("IX USDT", "USDT");
@@ -75,6 +78,9 @@ export async function deployIExchange() {
     oneGrand,
     currency,
     paymentMethod,
+    usdt,
+    oneGrandNumber,
+    chainId
   };
 }
 

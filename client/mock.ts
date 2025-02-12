@@ -7,15 +7,17 @@ export function sameChainOrder(
   currency: string,
   paymentMethod: string,
   quantity: number,
-  orderType: OrderType
+  orderType: OrderType,
+  traderChain = 1,
+  merchantChain = 1
 ): CreateOrder {
   const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
   return {
     trader,
     merchant,
-    traderChain: BigInt(1),
-    merchantChain: BigInt(1),
+    traderChain: BigInt(traderChain),
+    merchantChain: BigInt(merchantChain),
     token,
     currency,
     paymentMethod,

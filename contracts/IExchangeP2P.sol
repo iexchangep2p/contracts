@@ -5,8 +5,8 @@ import "./diamond/Diamond.sol";
 import "./libraries/LibSig.sol";
 
 contract IExchangeP2P is Diamond {
-    bytes32 private constant DOMAIN_NAME = LibSig.DOMAIN_NAME;
-    bytes32 private constant DOMAIN_VERSION = LibSig.DOMAIN_VERSION;
+    bytes32 public constant DOMAIN_NAME = LibSig.DOMAIN_NAME;
+    bytes32 public constant DOMAIN_VERSION = LibSig.DOMAIN_VERSION;
     bytes32 public immutable domainSeparator;
 
     constructor(

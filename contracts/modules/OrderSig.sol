@@ -6,10 +6,10 @@ import "../libraries/LibOrder.sol";
 import "../libraries/LibAppeal.sol";
 import "../libraries/LibSig.sol";
 import "../globals/Errors.sol";
-
+import "hardhat/console.sol";
 contract OrderSig is IOrderSig {
     modifier validSig(bytes calldata _sig) {
-        if (!HelpersLib.compareBytes(_sig, HelpersLib.emptyBytes)) {
+        if (HelpersLib.compareBytes(_sig, HelpersLib.emptyBytes)) {
             revert InvalidSignature();
         }
         _;
@@ -43,6 +43,7 @@ contract OrderSig is IOrderSig {
         OrderState state;
         bytes32 _orderHash = LibSig._hashOrderEIP712(_order);
         address trader = LibSig._signer(_orderHash, _traderSig);
+        console.log(trader,_order.trader);
         if (_order.trader != trader) {
             revert InvalidSigner();
         }

@@ -82,6 +82,13 @@ export function iexDomain(
     version: keccak256(toUtf8Bytes("v2")),
   };
 }
+
+export function iexDomainHash(
+  chainId: number,
+  verifyingContract: string
+): string {
+  return TypedDataEncoder.hashDomain(iexDomain(chainId, verifyingContract));
+}
 // https://docs.ethers.org/v6/api/providers/#Signer-signTypedData
 export async function signOrder(
   order: CreateOrder,
