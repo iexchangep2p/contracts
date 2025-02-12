@@ -25,7 +25,7 @@ library LibSig {
 
     bytes32 internal constant CREATE_ORDER_METHOD_TYPE_HASH =
         keccak256(
-            "OrderMethodSig(bytes32 orderHash,uint8 method,uint256 expiry)"
+            "OrderMethodPayload(bytes32 orderHash,uint8 method,uint256 expiry)"
         );
 
     function _signer(

@@ -176,7 +176,7 @@ library LibOrder {
         }
         o.orders[_orderHash].orderState = OrderState.released;
         LibMerchant
-            ._getMerchant(o.orders[_orderHash].merchant)
+            ._get(o.orders[_orderHash].merchant)
             .concurrentOrders -= 1;
         uint256 fee = _computeOrderFee(
             o.tradeToken[o.orders[_orderHash].token],

@@ -4,8 +4,26 @@ import {
   toUtf8Bytes,
   TypedDataDomain,
   TypedDataEncoder,
+  AbiCoder,
+  concat,
 } from "ethers";
 import { CreateOrder, OrderMethodPayload, OrderType } from "./types";
+
+export function iexDomain(
+  chainId: number,
+  verifyingContract: string
+): TypedDataDomain {
+  return {
+    name: "IExchange P2P Protocol",
+    version: "v2",
+    chainId,
+    verifyingContract,
+  };
+}
+
+export function iexDomainHash(domain: TypedDataDomain): string {
+  return TypedDataEncoder.hashDomain(domain);
+}
 
 // https://docs.ethers.org/v6/api/hashing/#TypedDataEncoder
 export function encodedCreateOrder(): TypedDataEncoder {
@@ -59,48 +77,20 @@ export function encodedCreateOrder(): TypedDataEncoder {
   });
 }
 
-export function createOrderHash(
-  order: CreateOrder,
-  verifyingContract: string,
-  chainId: number
-): string {
-  return TypedDataEncoder.hash(
-    iexDomain(chainId, verifyingContract),
-    encodedCreateOrder().types,
-    order
-  );
-}
-//
-export function iexDomain(
-  chainId: number,
-  verifyingContract: string
-): TypedDataDomain {
-  return {
-    chainId,
-    verifyingContract,
-    name: keccak256(toUtf8Bytes("IExchange P2P Protocol")),
-    version: keccak256(toUtf8Bytes("v2")),
-  };
-}
-
-export function iexDomainHash(
-  chainId: number,
-  verifyingContract: string
-): string {
-  return TypedDataEncoder.hashDomain(iexDomain(chainId, verifyingContract));
-}
 // https://docs.ethers.org/v6/api/providers/#Signer-signTypedData
 export async function signOrder(
-  order: CreateOrder,
   signer: Signer,
-  chainId: number,
-  verifyingContract: string
+  order: CreateOrder,
+  domain: TypedDataDomain
 ): Promise<string> {
-  return signer.signTypedData(
-    iexDomain(chainId, verifyingContract),
-    encodedCreateOrder().types,
-    order
-  );
+  return signer.signTypedData(domain, encodedCreateOrder().types, order);
+}
+
+export function createOrderTypedDataHash(
+  order: CreateOrder,
+  domain: TypedDataDomain
+): string {
+  return TypedDataEncoder.hash(domain, encodedCreateOrder().types, order);
 }
 
 export function orderSigChain(order: CreateOrder): number {
@@ -112,9 +102,9 @@ export function orderSigChain(order: CreateOrder): number {
 }
 
 // https://docs.ethers.org/v6/api/hashing/#TypedDataEncoder
-export function encodedCreateOrderMethodPayload(): TypedDataEncoder {
+export function encodedOrderMethodPayload(): TypedDataEncoder {
   return new TypedDataEncoder({
-    OrderMethodSig: [
+    OrderMethodPayload: [
       {
         name: "orderHash",
         type: "bytes32",
@@ -131,27 +121,25 @@ export function encodedCreateOrderMethodPayload(): TypedDataEncoder {
   });
 }
 
-export function createOrderMethodHash(
+export function createOrderMethodTypedDataHash(
   orderMethod: OrderMethodPayload,
-  verifyingContract: string,
-  chainId: number
+  domain: TypedDataDomain
 ): string {
   return TypedDataEncoder.hash(
-    iexDomain(chainId, verifyingContract),
-    encodedCreateOrderMethodPayload().types,
+    domain,
+    encodedOrderMethodPayload().types,
     orderMethod
   );
 }
 
 export async function signOrderMethod(
-  orderMethod: OrderMethodPayload,
   signer: Signer,
-  chainId: number,
-  verifyingContract: string
+  orderMethod: OrderMethodPayload,
+  domain: TypedDataDomain
 ): Promise<string> {
   return signer.signTypedData(
-    iexDomain(chainId, verifyingContract),
-    encodedCreateOrderMethodPayload().types,
+    domain,
+    encodedOrderMethodPayload().types,
     orderMethod
   );
 }

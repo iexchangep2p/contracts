@@ -1,15 +1,23 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { loadFixture, } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import {anyValue} from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { ethers, ignition } from "hardhat";
 import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
+  createOrderMethodTypedDataHash,
+  createOrderTypedDataHash,
   encodedCreateOrder,
   iexDomain,
   iexDomainHash,
+  makeOrderMethod,
+  OrderMethod,
+  OrderMethodPayload,
   orderSigChain,
+  OrderState,
   OrderType,
   sameChainOrder,
   signOrder,
+  signOrderMethod,
 } from "../client";
 
 describe("Complete OrderSig", function () {
@@ -24,6 +32,7 @@ describe("Complete OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
+      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -35,63 +44,22 @@ describe("Complete OrderSig", function () {
       ethers.keccak256(paymentMethod),
       oneGrandNumber,
       OrderType.buy,
+      chainId,
       chainId
     );
 
-    const coder = new ethers.AbiCoder();
-
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
-    // const domain = iexDomain(sigchain, sigchainAddress);
-    // console.log(domain);
-    const domain = {
-      chainId: 31337,
-      verifyingContract: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
-      name: "0x03c29967dc1ec387c86cb32e2d942a047a54b4d2a64b4fea68f9345b7f8089da",
-      version:
-        "0xf9446b8e937d86f0bc87cac73923491692b123ca5f8761908494703758206adf",
-    };
-    const TYPE_HASH = ethers.keccak256(
-      ethers.toUtf8Bytes(
-        "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-      )
-    );
-    const hashdDomain = ethers.keccak256(
-      coder.encode(
-        ["bytes32", "bytes32", "bytes32", "uint256", "address"],
-        [
-          TYPE_HASH,
-          domain.name,
-          domain.version,
-          domain.chainId,
-          domain.verifyingContract,
-        ]
-      )
-    );
-    console.log("hashdDomain", hashdDomain);
+    const domain = iexDomain(sigchain, sigchainAddress);
 
-    const hashDomainWithEthers = ethers.TypedDataEncoder.hashDomain(domain);
+    const domainHash = iexDomainHash(domain);
 
-    console.log("hashDomainWithEthers", hashDomainWithEthers);
-
-    const domainHash = iexDomainHash(sigchain, sigchainAddress);
+    const orderHash = createOrderTypedDataHash(order, domain);
 
     const sigchainDomainHash = await iExchangeP2P.domainSeparator();
-    console.log(domainHash, sigchainDomainHash);
-
-    // expect(domainHash).to.equal(sigchainDomainHash);
-    const traderSig = await signOrder(
-      order,
-      amaTrader,
-      sigchain,
-      sigchainAddress
-    );
-    const merchantSig = await signOrder(
-      order,
-      kofiMerchant,
-      sigchain,
-      sigchainAddress
-    );
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
 
     const traderAddress = ethers.verifyTypedData(
       domain,
@@ -110,8 +78,48 @@ describe("Complete OrderSig", function () {
 
     expect(kofiMerchant.address).to.equal(merchantAddress);
 
-    await usdt.connect(amaTrader).approve(sigchainAddress, oneGrand);
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
 
-    await orderSigProxy.createOrder(order, traderSig, merchantSig);
+    await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        kofiMerchant.address,
+        await orderSigProxy.getAddress(),
+        oneGrand
+      );
+
+    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
+      orderHash,
+      OrderMethod.pay
+    );
+    const payOrderSig = await signOrderMethod(
+      amaTrader,
+      payOrderMethod,
+      domain
+    );
+
+    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
+      .to.emit(orderSigProxy, "OrderPaid")
+      .withArgs(orderHash, OrderState.paid);
+
+    const releaseOrderMethod: OrderMethodPayload = makeOrderMethod(
+      orderHash,
+      OrderMethod.release
+    );
+    const releaseOrderSig = await signOrderMethod(
+      kofiMerchant,
+      releaseOrderMethod,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.releaseOrder(releaseOrderMethod, releaseOrderSig)
+    )
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        await orderSigProxy.getAddress(),
+        amaTrader.address,
+        anyValue
+      );
   });
 });

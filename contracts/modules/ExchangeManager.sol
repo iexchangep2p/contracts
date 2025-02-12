@@ -129,11 +129,11 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
         uint256 _sellLimit
     ) external virtual override {
         OrderStore storage o = OrderStorage.load();
-        bytes32 methodHash = keccak256(_currency);
-        if (o.currency[methodHash].active) {
+        bytes32 currencyHash = keccak256(_currency);
+        if (o.currency[currencyHash].active) {
             revert CurrencyExist();
         }
-        o.paymentMethod[methodHash] = MoneyConfig({
+        o.currency[currencyHash] = MoneyConfig({
             active: true,
             buyLimit: _buyLimit,
             sellLimit: _sellLimit,
@@ -141,9 +141,9 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
         });
         emit CurrencyAdded(
             msg.sender,
-            methodHash,
-            o.paymentMethod[methodHash].buyLimit,
-            o.paymentMethod[methodHash].sellLimit
+            currencyHash,
+            o.paymentMethod[currencyHash].buyLimit,
+            o.paymentMethod[currencyHash].sellLimit
         );
     }
 
