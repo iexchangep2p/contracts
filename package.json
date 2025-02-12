@@ -14,7 +14,6 @@
     "coverage": "hardhat coverage",
     "test:gas": "REPORT_GAS=true hardhat test",
     "test:local:gas": "REPORT_GAS=true bun run test:local",
-    "deploy:main": "hardhat ignition deploy ignition/modules/IExchange.ts --verify --network",
     "deploys": "hardhat ignition deployments",
     "deploys:id": "hardhat ignition status",
     "deploy:all": "hardhat run scripts/deploy.ts --network",
