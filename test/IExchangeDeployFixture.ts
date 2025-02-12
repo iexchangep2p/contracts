@@ -17,6 +17,7 @@ export async function deployIExchange() {
     iExchangeP2P,
     cutProxy,
     acProxy,
+    orderSigProxy,
   } = await ignition.deploy(IgniteTestModule, {
     displayUi: false,
   });
@@ -42,6 +43,7 @@ export async function deployIExchange() {
     yaa,
     merchantProxy,
     orderProxy,
+    orderSigProxy,
     appealProxy,
     managerProxy,
     viewProxy,
