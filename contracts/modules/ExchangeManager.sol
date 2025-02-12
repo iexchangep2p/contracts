@@ -38,9 +38,8 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
         address _token,
         uint256 _buyLimit,
         uint256 _sellLimit,
-        address _crossChainHandler,
+        address _crossChainSender,
         uint256 _orderFee,
-        uint256 _collectedFees,
         uint256 _stakeAmount
     )
         external
@@ -49,9 +48,8 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
         onlyIExchangeManager
         nonZero(_buyLimit)
         nonZero(_sellLimit)
-        positiveAddress(_crossChainHandler)
+        positiveAddress(_crossChainSender)
         nonZero(_orderFee)
-        nonZero(_collectedFees)
         nonZero(_stakeAmount)
     {
         OrderStore storage o = OrderStorage.load();
@@ -62,9 +60,9 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
             active: true,
             buyLimit: _buyLimit,
             sellLimit: _sellLimit,
-            crossChainHandler: _crossChainHandler,
+            crossChainHandler: _crossChainSender,
             orderFee: _orderFee,
-            collectedFees: _collectedFees,
+            collectedFees: 0,
             stakeAmount: _stakeAmount
         });
         emit TradeTokenAdded(

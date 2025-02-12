@@ -51,9 +51,8 @@ abstract contract IExchangeManager {
         address _token,
         uint256 _buyLimit,
         uint256 _sellLimit,
-        address _crossChainHandler,
+        address _crossChainSender,
         uint256 _orderFee,
-        uint256 _collectedFees,
         uint256 _stakeAmount
     ) external virtual;
     function removeTradeToken(address _token) external virtual;

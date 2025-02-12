@@ -4,7 +4,7 @@ import { ethers, ignition } from "hardhat";
 import IgniteTestModule from "../ignition/modules/IgniteTest";
 
 export async function deployIExchange() {
-  const [owner, kofiMerchant, amaTrader, yaa] = await ethers.getSigners();
+  const [owner, kofiMerchant, amaTrader, yaaBrokie] = await ethers.getSigners();
 
   const {
     merchantProxy,
@@ -26,6 +26,9 @@ export async function deployIExchange() {
   const minStakeAmount = BigInt(1 * 1e18);
   const oneMil = BigInt(minStakeAmount * BigInt(1e6));
   const oneGrand = BigInt(minStakeAmount * BigInt(1e3));
+  const orderFeeBasis = 100;
+  const currency = ethers.toUtf8Bytes("ECO");
+  const paymentMethod = ethers.toUtf8Bytes("ECOPAY");
 
   const USDT = await ethers.getContractFactory("TokenCutter");
   const usdt = await USDT.deploy("IX USDT", "USDT");
@@ -36,11 +39,26 @@ export async function deployIExchange() {
   await usdt.transfer(amaTrader, oneMil);
   await ixToken.transfer(amaTrader, oneMil);
 
+  const DummySender = await ethers.getContractFactory("DummySender");
+  const dummySender = await DummySender.deploy();
+
+  await managerProxy.addStakeToken(await ixToken.getAddress(), oneGrand);
+  await managerProxy.addPaymentMethod(paymentMethod, oneMil, oneMil);
+  await managerProxy.addCurrency(currency, oneMil, oneMil);
+
+  await managerProxy.addTradeToken(
+    await usdt.getAddress(),
+    oneMil,
+    oneMil,
+    await dummySender.getAddress(),
+    orderFeeBasis,
+    oneGrand
+  );
   return {
     owner,
     kofiMerchant,
     amaTrader,
-    yaa,
+    yaaBrokie,
     merchantProxy,
     orderProxy,
     orderSigProxy,
@@ -55,6 +73,8 @@ export async function deployIExchange() {
     ixToken,
     oneMil,
     oneGrand,
+    currency,
+    paymentMethod,
   };
 }
 
