@@ -15,6 +15,7 @@ contract DummySender is ICrossChainSender {
     }
 
     function supportsChain(
+        address /*_token*/,
         uint256 /*_chainId*/
     ) external pure override returns (bool) {
         return true;

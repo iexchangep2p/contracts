@@ -60,7 +60,7 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
             active: true,
             buyLimit: _buyLimit,
             sellLimit: _sellLimit,
-            crossChainHandler: _crossChainSender,
+            crossChainSender: _crossChainSender,
             orderFee: _orderFee,
             collectedFees: 0,
             stakeAmount: _stakeAmount
@@ -70,7 +70,7 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
             _token,
             o.tradeToken[_token].buyLimit,
             o.tradeToken[_token].sellLimit,
-            o.tradeToken[_token].crossChainHandler,
+            o.tradeToken[_token].crossChainSender,
             o.tradeToken[_token].orderFee,
             o.tradeToken[_token].collectedFees,
             o.tradeToken[_token].stakeAmount

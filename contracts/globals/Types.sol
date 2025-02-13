@@ -28,7 +28,7 @@ struct TradeToken {
     bool active;
     uint256 buyLimit;
     uint256 sellLimit;
-    address crossChainHandler;
+    address crossChainSender;
     uint256 orderFee;
     uint256 collectedFees;
     uint256 stakeAmount;

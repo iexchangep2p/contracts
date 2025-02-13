@@ -9,5 +9,8 @@ interface ICrossChainSender {
         uint256 _chainId
     ) external;
 
-    function supportsChain(uint256 _chainId) external returns(bool);
+    function supportsChain(
+        address _token,
+        uint256 _chainId
+    ) external returns (bool);
 }
