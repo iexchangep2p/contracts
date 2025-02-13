@@ -94,7 +94,7 @@ export function createOrderTypedDataHash(
 }
 
 export function orderSigChain(order: CreateOrder): number {
-  if (order.orderType == OrderType.buy) {
+  if (order.orderType == OrderType.sell) {
     return Number(order.traderChain);
   } else {
     return Number(order.merchantChain);
