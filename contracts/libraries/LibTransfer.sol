@@ -39,7 +39,7 @@ library LibTransfer {
         uint256 _chainId
     ) internal returns (bool) {
         TradeToken storage t = OrderStorage.load().tradeToken[_token];
-        ICrossChainSender handler = ICrossChainSender(t.crossChainHandler);
+        ICrossChainSender handler = ICrossChainSender(t.crossChainSender);
         (bool success, bytes memory result) = address(handler).delegatecall(
             abi.encodeWithSelector(
                 ICrossChainSender.supportsChain.selector,
@@ -60,7 +60,7 @@ library LibTransfer {
         uint256 _chainId
     ) internal {
         TradeToken storage t = OrderStorage.load().tradeToken[_token];
-        ICrossChainSender handler = ICrossChainSender(t.crossChainHandler);
+        ICrossChainSender handler = ICrossChainSender(t.crossChainSender);
         (bool success, ) = address(handler).delegatecall(
             abi.encodeWithSelector(
                 ICrossChainSender.send.selector,
