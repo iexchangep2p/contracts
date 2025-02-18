@@ -81,7 +81,7 @@ const config: HardhatUserConfig = {
         network: "morphTestnet",
         chainId: 2810,
         urls: {
-          apiURL: "https://explorer-api-holesky.morphl2.io/api? ",
+          apiURL: "https://explorer-api-holesky.morphl2.io/api ",
           browserURL: "https://explorer-holesky.morphl2.io",
         },
       },
@@ -89,8 +89,8 @@ const config: HardhatUserConfig = {
         network: "arbitrumSepolia",
         chainId: 421614,
         urls: {
-          apiURL: "https://api-sepolia.arbiscan.io/api",
-          browserURL: "https://sepolia.arbiscan.io",
+          apiURL: "https://arbitrum-sepolia.blockscout.com/api",
+          browserURL: "https://arbitrum-sepolia.blockscout.com",
         },
       },
       {

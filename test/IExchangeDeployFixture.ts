@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { ethers, ignition } from "hardhat";
 
-import IgniteTestModule from "../ignition/modules/IgniteTest";
+import IgniteTestModule from "../ignition/modules/test/IgniteTest";
 
 export async function deployIExchange() {
   const [owner, kofiMerchant, amaTrader, yaaBrokie] = await ethers.getSigners();
@@ -80,7 +80,7 @@ export async function deployIExchange() {
     paymentMethod,
     usdt,
     oneGrandNumber,
-    chainId
+    chainId,
   };
 }
 
