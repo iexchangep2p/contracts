@@ -282,7 +282,7 @@ describe("Complete OrderSig", function () {
     await expect(orderSigProxy.createOrder(order, traderSig, "0x")).to.not.be
       .reverted;
 
-    console.log("Order hash", await viewProxy.order(orderHash));
+    //console.log("Order hash", await viewProxy.order(orderHash));
     const [
       trader,
       merchant,
@@ -316,6 +316,119 @@ describe("Complete OrderSig", function () {
     await expect(
       orderSigProxy.createOrder(order, "0x", merchantSig)
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
-    
+  });
+
+  it("Buy[Reverts for Accept]", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      viewProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
+
+    await expect(orderSigProxy.createOrder(order, traderSig, "0x")).to.not.be
+      .reverted;
+
+    const acceptOrderMethod: OrderMethodPayload = makeOrderMethod(
+      orderHash,
+      OrderMethod.accept
+    );
+    const merchantSigForAccept = await signOrderMethod(
+      kofiMerchant,
+      acceptOrderMethod,
+      domain
+    );
+
+    //revert for invalid accept Sig
+    await expect(
+      (orderSigProxy.connect(kofiMerchant) as any).acceptOrder(
+        acceptOrderMethod,
+        traderSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "MustBeMerchant");
+
+    //revert for expired sig
+    const expiryOrderMethod: OrderMethodPayload = makeOrderMethod(
+      orderHash,
+      OrderMethod.accept
+    );
+    expiryOrderMethod.expiry = BigInt(
+      Math.floor(Date.now() / 1000) - 60 * 15
+    );
+
+    const expiredMerchantSigForAccept = await signOrderMethod(
+      kofiMerchant,
+      expiryOrderMethod,
+      domain
+    );
+    console.log("expiry: ", expiryOrderMethod.expiry);
+
+    await expect(
+      (orderSigProxy.connect(kofiMerchant) as any).acceptOrder(
+        expiryOrderMethod,
+        expiredMerchantSigForAccept
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "SignatureExpired");
+
+    //pass acceptOrder
+    await expect(
+      (orderSigProxy.connect(kofiMerchant) as any).acceptOrder(
+        acceptOrderMethod,
+        merchantSigForAccept
+      )
+    ).to.not.be.reverted;
+
+    console.log("New order status: ", await viewProxy.order(orderHash));
   });
 });
