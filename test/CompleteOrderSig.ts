@@ -216,4 +216,91 @@ describe("Complete OrderSig", function () {
         anyValue
       );
   });
+
+  it("Buy[Reverts for Create]", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      orderProxy,
+      viewProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
+
+    //create Buy order without merchant sig: orderState = pending
+    await expect(orderSigProxy.createOrder(order, traderSig, "0x")).to.not.be
+      .reverted;
+
+    console.log("Order hash", await viewProxy.order(orderHash));
+    const [
+      trader,
+      merchant,
+      traderChain,
+      merchantChain,
+      token,
+      oCurrency,
+      oPaymentMethod,
+      orderType,
+      orderState,
+      quantity,
+      deadline,
+      createdAt,
+    ] = await viewProxy.order(orderHash);
+    
+    //orderState = pending; 0
+    expect(orderState).to.equal(OrderState.pending);
+
+    
+
+  });
 });
