@@ -221,6 +221,7 @@ describe("Complete OrderSig", function () {
     const {
       kofiMerchant,
       amaTrader,
+      yaaBrokie,
       oneGrand,
       usdt,
       currency,
@@ -296,11 +297,25 @@ describe("Complete OrderSig", function () {
       deadline,
       createdAt,
     ] = await viewProxy.order(orderHash);
-    
+
     //orderState = pending; 0
     expect(orderState).to.equal(OrderState.pending);
 
-    
+    //revert for invalid trader
+    const brokieSig = await signOrder(yaaBrokie, order, domain);
+    await expect(
+      orderSigProxy.createOrder(order, brokieSig, "0x")
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSigner");
 
+    //revert for invalid merchant
+    await expect(
+      orderSigProxy.createOrder(order, traderSig, brokieSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSigner");
+
+    //revert for invalid traderSig
+    await expect(
+      orderSigProxy.createOrder(order, "0x", merchantSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
+    
   });
 });
