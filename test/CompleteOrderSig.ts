@@ -403,9 +403,7 @@ describe("Complete OrderSig", function () {
       orderHash,
       OrderMethod.accept
     );
-    expiryOrderMethod.expiry = BigInt(
-      Math.floor(Date.now() / 1000) - 60 * 15
-    );
+    expiryOrderMethod.expiry = BigInt(Math.floor(Date.now() / 1000) - 60 * 15);
 
     const expiredMerchantSigForAccept = await signOrderMethod(
       kofiMerchant,
@@ -420,6 +418,34 @@ describe("Complete OrderSig", function () {
         expiredMerchantSigForAccept
       )
     ).to.be.revertedWithCustomError(orderSigProxy, "SignatureExpired");
+
+    //revert for invalid accept Sig
+    await expect(
+      (orderSigProxy.connect(kofiMerchant) as any).acceptOrder(
+        acceptOrderMethod,
+        traderSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "MustBeMerchant");
+
+    //revert for invalid method
+    const invalidOrderMethod: OrderMethodPayload = makeOrderMethod(
+      orderHash,
+      OrderMethod.release
+    );
+
+    const invalidMerchantSigForAccept = await signOrderMethod(
+      kofiMerchant,
+      invalidOrderMethod,
+      domain
+    );
+    console.log("expiry: ", expiryOrderMethod.expiry);
+
+    await expect(
+      (orderSigProxy.connect(kofiMerchant) as any).acceptOrder(
+        invalidOrderMethod,
+        invalidMerchantSigForAccept
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidOrderMethodCall");
 
     //pass acceptOrder
     await expect(
