@@ -259,11 +259,46 @@ describe("Create Order - OrderSig", function () {
     //revert for invalid quantity
     const invalidQuantityOrder = { ...order, quantity: BigInt(0) };
     //sign
-    const invalidTraderSig = await signOrder(amaTrader, invalidQuantityOrder, domain);
-    const invalidMerchantSig = await signOrder(kofiMerchant, invalidQuantityOrder, domain);
-    
-    await expect(orderSigProxy.createOrder(invalidQuantityOrder, invalidTraderSig, invalidMerchantSig)).to.be.revertedWithCustomError(orderSigProxy, "InvalidQuantity");
+    const invalidTraderSig = await signOrder(
+      amaTrader,
+      invalidQuantityOrder,
+      domain
+    );
+    const invalidMerchantSig = await signOrder(
+      kofiMerchant,
+      invalidQuantityOrder,
+      domain
+    );
 
+    await expect(
+      orderSigProxy.createOrder(
+        invalidQuantityOrder,
+        invalidTraderSig,
+        invalidMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidQuantity");
+
+    //revert invalid chainId
+    const invalidChainIdOrder = { ...order, traderChain: 0n };
+
+    const invalidChainIdTraderSig = await signOrder(
+      amaTrader,
+      invalidChainIdOrder,
+      domain
+    );
+    const invalidChainIdMerchantSig = await signOrder(
+      kofiMerchant,
+      invalidChainIdOrder,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.createOrder(
+        invalidChainIdOrder,
+        invalidChainIdTraderSig,
+        invalidChainIdMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidChainId");
     //pass createOrder
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
       .to.emit(usdt, "Transfer")
