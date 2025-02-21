@@ -33,7 +33,6 @@ describe("Create Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -207,7 +206,7 @@ describe("Create Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
+      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -299,6 +298,23 @@ describe("Create Order - OrderSig", function () {
         invalidChainIdMerchantSig
       )
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidChainId");
+
+    //revert for unsupported currency
+    const unsupportedCurrencyOrder = {
+      ...order,
+      currency: ethers.keccak256(ethers.toUtf8Bytes("USD")),
+    };
+    const unsupportedCurrencyTraderSig = await signOrder(amaTrader, unsupportedCurrencyOrder, domain);
+    const unsupportedCurrencyMerchantSig = await signOrder(kofiMerchant, unsupportedCurrencyOrder, domain);
+
+    await expect(
+      orderSigProxy.createOrder(
+        unsupportedCurrencyOrder,
+        unsupportedCurrencyTraderSig,
+        unsupportedCurrencyMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedCurrency");
+
     //pass createOrder
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
       .to.emit(usdt, "Transfer")
@@ -307,5 +323,10 @@ describe("Create Order - OrderSig", function () {
         await orderSigProxy.getAddress(),
         oneGrand
       );
+
+    //revert for order exists
+    await expect(
+      orderSigProxy.createOrder(order, traderSig, merchantSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "OrderExists");
   });
 });
