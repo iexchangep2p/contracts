@@ -1,3 +1,4 @@
+import { CreateOrder } from "./../client/types";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { ethers, ignition } from "hardhat";
@@ -173,6 +174,103 @@ describe("Create Order - OrderSig", function () {
     await expect(
       orderSigProxy.createOrder(order, "0x", merchantSig)
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
+
+    //revert for expired sig
+    const expiredOrder = {
+      ...order,
+      expiry: BigInt(Math.floor(Date.now() / 1000) - 60 * 15),
+    };
+    const expiredTraderSig = await signOrder(amaTrader, expiredOrder, domain);
+    const expiredMerchantSig = await signOrder(
+      kofiMerchant,
+      expiredOrder,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.createOrder(
+        expiredOrder,
+        expiredTraderSig,
+        expiredMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "SignatureExpired");
   });
 
+  it("Buy[Create Order - Library Reverts]", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      orderProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
+
+    //revert for zeroAddress: INVALID, CANNOT GENERATE ZERO SIG
+    //revert for invalid quantity
+    const invalidQuantityOrder = { ...order, quantity: BigInt(0) };
+    //sign
+    const invalidTraderSig = await signOrder(amaTrader, invalidQuantityOrder, domain);
+    const invalidMerchantSig = await signOrder(kofiMerchant, invalidQuantityOrder, domain);
+    
+    await expect(orderSigProxy.createOrder(invalidQuantityOrder, invalidTraderSig, invalidMerchantSig)).to.be.revertedWithCustomError(orderSigProxy, "InvalidQuantity");
+
+    //pass createOrder
+    await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        kofiMerchant.address,
+        await orderSigProxy.getAddress(),
+        oneGrand
+      );
+  });
 });
