@@ -26,6 +26,7 @@ import {
   OrderMethodPayload,
   OrderType,
   PreCreateOrder,
+  PreparedOrderMethod,
 } from "./types";
 import "dotenv/config";
 
@@ -55,45 +56,46 @@ import "dotenv/config";
     expiry,
     duration,
   };
-  console.log("preOrder", JSON.stringify(preOrder));
   const order = makeOrder(preOrder);
 
   const sigchain = orderSigChain(order);
   const domain = iexDomain(sigchain, process.env.DUMMY_P2P!);
 
   const domainHash = iexDomainHash(domain);
-  console.log(
-    "domainHash",
-    domainHash,
-    ethers.TypedDataEncoder.hashDomain(domain)
-  );
 
   const orderHash = createOrderTypedDataHash(order, domain);
-  console.log("orderHash", orderHash);
 
   const traderSig = await signOrder(traderWallet, order, domain);
   const merchantSig = await signOrder(merchantWallet, order, domain);
-  console.log("Trader Signature", traderSig);
-  console.log("Merchant Signature", merchantSig);
   const traderAddress = recoverAddress(orderHash, traderSig);
-  console.log("traderAddress", trader, traderAddress);
 
   const merchantAddress = recoverAddress(orderHash, merchantSig);
-  console.log("merchantAddress", merchant, merchantAddress);
 
-  const payOrderMethod: OrderMethodPayload = makeOrderMethod(
+  const methodPayload: OrderMethodPayload = {
     orderHash,
-    OrderMethod.pay
-  );
-  console.log("payOrderMethod", JSON.stringify(payOrderMethod));
+    method: OrderMethod.pay,
+    expiry,
+  };
+  const payOrderMethod: PreparedOrderMethod = makeOrderMethod(methodPayload);
   const payOrderHash = createOrderMethodTypedDataHash(payOrderMethod, domain);
-  console.log("payOrderHash", payOrderHash);
   const payOrderSig = await signOrderMethod(
     traderWallet,
     payOrderMethod,
     domain
   );
-  console.log("payOrderSig", payOrderSig);
   const addressFromHash = recoverAddress(payOrderHash, payOrderSig);
-  console.log(addressFromHash, trader);
+
+  const all = [
+    preOrder,
+    { domainHash, orderHash },
+    { traderSig, merchantSig },
+    methodPayload,
+    { payOrderHash, payOrderSig },
+    {
+      addressFromHash: addressFromHash == trader,
+      merchantAddress: merchant == merchantAddress,
+      traderAddress: trader == traderAddress,
+    },
+  ];
+  console.log(JSON.stringify(all));
 })();

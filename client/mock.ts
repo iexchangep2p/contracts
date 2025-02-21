@@ -5,6 +5,7 @@ import {
   OrderMethodPayload,
   OrderType,
   PreCreateOrder,
+  PreparedOrderMethod,
 } from "./types";
 
 export function sameChainOrder(
@@ -60,13 +61,11 @@ export function orderToJson(order: CreateOrder) {
 }
 
 export function makeOrderMethod(
-  orderHash: string,
-  method: OrderMethod
-): OrderMethodPayload {
-  const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
+  methodPayload: OrderMethodPayload,
+): PreparedOrderMethod {
   return {
-    orderHash,
-    method,
-    expiry: BigInt(expiry),
+    orderHash: methodPayload.orderHash,
+    method: methodPayload.method,
+    expiry: BigInt(methodPayload.expiry),
   };
 }

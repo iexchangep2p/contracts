@@ -51,5 +51,11 @@ export enum OrderMethod {
 export type OrderMethodPayload = {
   orderHash: string;
   method: OrderMethod;
+  expiry: number;
+};
+
+export type PreparedOrderMethod = {
+  orderHash: string;
+  method: OrderMethod;
   expiry: BigInt;
 };
