@@ -15,6 +15,7 @@ import {
   orderSigChain,
   OrderState,
   OrderType,
+  PreparedOrderMethod,
   sameChainOrder,
   signOrder,
   signOrderMethod,
@@ -46,6 +47,8 @@ describe("Complete OrderSig", function () {
       chainId,
       chainId
     );
+
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -87,10 +90,13 @@ describe("Complete OrderSig", function () {
         oneGrand
       );
 
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const payMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.pay
-    );
+      method: OrderMethod.pay,
+      expiry,
+    };
+    const payOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(payMethodPayload);
     const payOrderSig = await signOrderMethod(
       amaTrader,
       payOrderMethod,
@@ -101,10 +107,13 @@ describe("Complete OrderSig", function () {
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
 
-    const releaseOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const releaseMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.release
-    );
+      method: OrderMethod.release,
+      expiry,
+    };
+    const releaseOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(releaseMethodPayload);
     const releaseOrderSig = await signOrderMethod(
       kofiMerchant,
       releaseOrderMethod,
@@ -131,6 +140,8 @@ describe("Complete OrderSig", function () {
       orderSigProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
+
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const order = sameChainOrder(
       amaTrader.address,
@@ -179,11 +190,13 @@ describe("Complete OrderSig", function () {
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
       .to.emit(usdt, "Transfer")
       .withArgs(amaTrader.address, await orderSigProxy.getAddress(), oneGrand);
-
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const payMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.pay
-    );
+      method: OrderMethod.pay,
+      expiry,
+    };
+    const payOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(payMethodPayload);
     const payOrderSig = await signOrderMethod(
       kofiMerchant,
       payOrderMethod,
@@ -193,11 +206,13 @@ describe("Complete OrderSig", function () {
     await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
-
-    const releaseOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const releaseMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.release
-    );
+      method: OrderMethod.release,
+      expiry,
+    };
+    const releaseOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(releaseMethodPayload);
     const releaseOrderSig = await signOrderMethod(
       amaTrader,
       releaseOrderMethod,
@@ -273,9 +288,8 @@ describe("Complete OrderSig", function () {
 
     await usdt.connect(amaTrader).approve(sigchainAddress, oneGrand);
 
-    await expect(orderSigProxy.createOrder(order, traderSig, ethers.ZeroHash))
+    await expect(orderSigProxy.createOrder(order, traderSig, "0x"))
       .to.emit(usdt, "Transfer")
       .withArgs(amaTrader.address, await orderSigProxy.getAddress(), oneGrand);
-
   });
 });
