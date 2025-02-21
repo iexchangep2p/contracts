@@ -395,6 +395,27 @@ describe("Create Order - OrderSig", function () {
       )
     ).to.be.revertedWithCustomError(orderSigProxy, "ZeroAddress");
 
+    //revert for invalid duration
+    const invalidDurationOrder = { ...order, duration: 0n };
+    const invalidDurationTraderSig = await signOrder(
+      amaTrader,
+      invalidDurationOrder,
+      domain
+    );
+    const invalidDurationMerchantSig = await signOrder(
+      kofiMerchant,
+      invalidDurationOrder,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.createOrder(
+        invalidDurationOrder,
+        invalidDurationTraderSig,
+        invalidDurationMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidDuration");
+
     //pass createOrder
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
       .to.emit(usdt, "Transfer")
