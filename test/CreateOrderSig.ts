@@ -315,6 +315,20 @@ describe("Create Order - OrderSig", function () {
       )
     ).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedCurrency");
 
+    //revert for unsupported paymentMethod
+    const unsupportedPaymentMethodOrder = {
+      ...order,
+      paymentMethod: ethers.keccak256(ethers.toUtf8Bytes("Chase Bank")),
+    };
+    const unsupportedPaymentMethodTraderSig = await signOrder(amaTrader, unsupportedPaymentMethodOrder, domain);
+    const unsupportedPaymentMethodMerchantSig = await signOrder(kofiMerchant, unsupportedPaymentMethodOrder, domain);
+
+    await expect(orderSigProxy.createOrder(
+      unsupportedPaymentMethodOrder,
+      unsupportedPaymentMethodTraderSig,
+      unsupportedPaymentMethodMerchantSig
+    )).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedPaymentMethod");
+    
     //pass createOrder
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
       .to.emit(usdt, "Transfer")
