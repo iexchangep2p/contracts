@@ -15,8 +15,18 @@ import {
   signOrder,
   signOrderMethod,
 } from "./lib";
-import { makeOrderMethod, sameChainOrder } from "./mock";
-import { OrderMethod, OrderMethodPayload, OrderType } from "./types";
+import {
+  makeOrder,
+  makeOrderMethod,
+  orderToJson,
+  sameChainOrder,
+} from "./mock";
+import {
+  OrderMethod,
+  OrderMethodPayload,
+  OrderType,
+  PreCreateOrder,
+} from "./types";
 import "dotenv/config";
 
 (async () => {
@@ -25,20 +35,28 @@ import "dotenv/config";
   const trader: string = traderWallet.address;
   const merchant: string = merchantWallet.address;
   const token: string = process.env.DUMMY_TOKEN!;
-  const currency: string = keccak256(toUtf8Bytes("GHS"));
-  const paymentMethod: string = keccak256(toUtf8Bytes("MTN"));
+  const currency: string = "GHS";
+  const paymentMethod: string = "Fidelity Bank";
   const quantity: number = 1000;
   const orderType: OrderType = OrderType.buy;
-
-  const order = sameChainOrder(
+  const chain: number = parseInt(process.env.DUMMY_CHAIN!);
+  const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
+  const duration = 1800;
+  const preOrder: PreCreateOrder = {
     trader,
     merchant,
     token,
     currency,
     paymentMethod,
     quantity,
-    orderType
-  );
+    orderType,
+    traderChain: chain,
+    merchantChain: chain,
+    expiry,
+    duration,
+  };
+  console.log("preOrder", JSON.stringify(preOrder));
+  const order = makeOrder(preOrder);
 
   const sigchain = orderSigChain(order);
   const domain = iexDomain(sigchain, process.env.DUMMY_P2P!);
@@ -55,8 +73,8 @@ import "dotenv/config";
 
   const traderSig = await signOrder(traderWallet, order, domain);
   const merchantSig = await signOrder(merchantWallet, order, domain);
-  console.log("Create Order Sigs", traderSig, merchantSig);
-
+  console.log("Trader Signature", traderSig);
+  console.log("Merchant Signature", merchantSig);
   const traderAddress = recoverAddress(orderHash, traderSig);
   console.log("traderAddress", trader, traderAddress);
 
@@ -67,6 +85,7 @@ import "dotenv/config";
     orderHash,
     OrderMethod.pay
   );
+  console.log("payOrderMethod", JSON.stringify(payOrderMethod));
   const payOrderHash = createOrderMethodTypedDataHash(payOrderMethod, domain);
   console.log("payOrderHash", payOrderHash);
   const payOrderSig = await signOrderMethod(

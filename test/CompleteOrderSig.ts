@@ -32,7 +32,6 @@ describe("Complete OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -130,7 +129,6 @@ describe("Complete OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -215,5 +213,69 @@ describe("Complete OrderSig", function () {
         kofiMerchant.address,
         anyValue
       );
+  });
+
+  it("Sell Create No Merchant Signature", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.sell,
+      chainId,
+      chainId
+    );
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(amaTrader).approve(sigchainAddress, oneGrand);
+
+    await expect(orderSigProxy.createOrder(order, traderSig, ethers.ZeroHash))
+      .to.emit(usdt, "Transfer")
+      .withArgs(amaTrader.address, await orderSigProxy.getAddress(), oneGrand);
+
   });
 });

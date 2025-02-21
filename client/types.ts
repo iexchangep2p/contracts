@@ -26,6 +26,20 @@ export type CreateOrder = {
   duration: BigInt;
 };
 
+export type PreCreateOrder = {
+  trader: string;
+  merchant: string;
+  traderChain: number;
+  merchantChain: number;
+  token: string;
+  currency: string;
+  paymentMethod: string;
+  orderType: OrderType;
+  quantity: number;
+  expiry: number;
+  duration: number;
+};
+
 export enum OrderMethod {
   accept,
   pay,
