@@ -18,6 +18,7 @@
     "deploys:id": "hardhat ignition status",
     "deploy:all": "hardhat run scripts/deploy.ts --network",
     "verify:all": "hardhat ignition verify --include-unrelated-contracts",
-    "setup:testnet": "hardhat run scripts/setup_testnet.ts --network"
+    "setup:testnet": "hardhat run scripts/setup_testnet.ts --network",
+    "lab": "bun client/lab.ts > data/order.json"
   }
 }

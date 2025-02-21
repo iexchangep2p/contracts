@@ -1,11 +1,4 @@
-import {
-  Wallet,
-  keccak256,
-  recoverAddress,
-  toUtf8Bytes,
-  verifyTypedData,
-} from "ethers";
-import * as ethers from "ethers";
+import { Wallet, recoverAddress } from "ethers";
 import {
   createOrderMethodTypedDataHash,
   createOrderTypedDataHash,
@@ -15,12 +8,7 @@ import {
   signOrder,
   signOrderMethod,
 } from "./lib";
-import {
-  makeOrder,
-  makeOrderMethod,
-  orderToJson,
-  sameChainOrder,
-} from "./mock";
+import { makeOrder, makeOrderMethod } from "./mock";
 import {
   OrderMethod,
   OrderMethodPayload,
@@ -39,7 +27,7 @@ import "dotenv/config";
   const currency: string = "GHS";
   const paymentMethod: string = "Fidelity Bank";
   const quantity: number = 1000;
-  const orderType: OrderType = OrderType.buy;
+  const orderType: OrderType = OrderType.sell;
   const chain: number = parseInt(process.env.DUMMY_CHAIN!);
   const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
   const duration = 1800;
