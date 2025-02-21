@@ -304,8 +304,16 @@ describe("Create Order - OrderSig", function () {
       ...order,
       currency: ethers.keccak256(ethers.toUtf8Bytes("USD")),
     };
-    const unsupportedCurrencyTraderSig = await signOrder(amaTrader, unsupportedCurrencyOrder, domain);
-    const unsupportedCurrencyMerchantSig = await signOrder(kofiMerchant, unsupportedCurrencyOrder, domain);
+    const unsupportedCurrencyTraderSig = await signOrder(
+      amaTrader,
+      unsupportedCurrencyOrder,
+      domain
+    );
+    const unsupportedCurrencyMerchantSig = await signOrder(
+      kofiMerchant,
+      unsupportedCurrencyOrder,
+      domain
+    );
 
     await expect(
       orderSigProxy.createOrder(
@@ -320,14 +328,49 @@ describe("Create Order - OrderSig", function () {
       ...order,
       paymentMethod: ethers.keccak256(ethers.toUtf8Bytes("Chase Bank")),
     };
-    const unsupportedPaymentMethodTraderSig = await signOrder(amaTrader, unsupportedPaymentMethodOrder, domain);
-    const unsupportedPaymentMethodMerchantSig = await signOrder(kofiMerchant, unsupportedPaymentMethodOrder, domain);
-
-    await expect(orderSigProxy.createOrder(
+    const unsupportedPaymentMethodTraderSig = await signOrder(
+      amaTrader,
       unsupportedPaymentMethodOrder,
-      unsupportedPaymentMethodTraderSig,
-      unsupportedPaymentMethodMerchantSig
-    )).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedPaymentMethod");
+      domain
+    );
+    const unsupportedPaymentMethodMerchantSig = await signOrder(
+      kofiMerchant,
+      unsupportedPaymentMethodOrder,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.createOrder(
+        unsupportedPaymentMethodOrder,
+        unsupportedPaymentMethodTraderSig,
+        unsupportedPaymentMethodMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedPaymentMethod");
+
+    //revert for invalid trade token
+    const invalidTradeTokenOrder = {
+      ...order,
+      token: ethers.Wallet.createRandom().address,
+    };
+    const invalidTradeTokenTraderSig = await signOrder(
+      amaTrader,
+      invalidTradeTokenOrder,
+      domain
+    );
+    const invalidTradeTokenMerchantSig = await signOrder(
+      kofiMerchant,
+      invalidTradeTokenOrder,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.createOrder(
+        invalidTradeTokenOrder,
+        invalidTradeTokenTraderSig,
+        invalidTradeTokenMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidTradeToken");
+
     
     //pass createOrder
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
