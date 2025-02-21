@@ -371,7 +371,30 @@ describe("Create Order - OrderSig", function () {
       )
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidTradeToken");
 
-    
+    //revert for zeroAddress trade token
+    const zeroAddressTradeTokenOrder = {
+      ...order,
+      token: ethers.ZeroAddress,
+    };
+    const zeroAddressTradeTokenTraderSig = await signOrder(
+      amaTrader,
+      zeroAddressTradeTokenOrder,
+      domain
+    );
+    const zeroAddressTradeTokenMerchantSig = await signOrder(
+      kofiMerchant,
+      zeroAddressTradeTokenOrder,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.createOrder(
+        zeroAddressTradeTokenOrder,
+        zeroAddressTradeTokenTraderSig,
+        zeroAddressTradeTokenMerchantSig
+      )
+    ).to.be.revertedWithCustomError(orderSigProxy, "ZeroAddress");
+
     //pass createOrder
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
       .to.emit(usdt, "Transfer")
