@@ -34,7 +34,7 @@ describe("Appeal Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
+      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -124,5 +124,8 @@ describe("Appeal Order - OrderSig", function () {
         OrderState.appealed,
         anyValue
       );
+    console.log("Appeals: ", await viewProxy.appeals(orderHash));
+    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeals(orderHash);
+    expect(appealsHash).to.equal(orderHash);
   });
 });

@@ -130,7 +130,6 @@ describe("Complete OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
