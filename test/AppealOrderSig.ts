@@ -112,20 +112,45 @@ describe("Appeal Order - OrderSig", function () {
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
 
-     const appealMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
+    const appealMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.pay,
+      expiry,
+    };
 
-    const appealOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      appealMethodPayload
-    );
+    const appealOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(appealMethodPayload);
     const appealOrderSig = await signOrderMethod(
       kofiMerchant,
       appealOrderMethod,
       domain
     );
+
+    //revert for expired sig
+    const newExpiry = Math.floor(Date.now() / 1000) - 60 * 15;
+
+    const expiryMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.pay,
+      expiry: newExpiry,
+    };
+    const expiryOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      expiryMethodPayload
+    );
+    const expiredMerchantSigForAppeal = await signOrderMethod(
+      kofiMerchant,
+      expiryOrderMethod,
+      domain
+    );
+    
+    await expect(orderSigProxy.appealOrder(expiryOrderMethod, expiredMerchantSigForAppeal)).to.be.revertedWithCustomError(orderSigProxy, "SignatureExpired");
+
+    //revrt for invalid sig
+    await expect(
+      orderSigProxy.appealOrder(payOrderMethod, "0x")
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
+
+    //Passing appeal order
     await expect(orderSigProxy.appealOrder(appealOrderMethod, appealOrderSig))
       .to.emit(orderSigProxy, "OrderAppealed")
       .withArgs(
@@ -136,7 +161,9 @@ describe("Appeal Order - OrderSig", function () {
         anyValue
       );
     console.log("Appeals: ", await viewProxy.appeals(orderHash));
-    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeals(orderHash);
+    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeals(
+      orderHash
+    );
     expect(appealsHash).to.equal(orderHash);
   });
 });
