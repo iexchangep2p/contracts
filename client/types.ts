@@ -54,6 +54,12 @@ export type OrderMethodPayload = {
   expiry: number;
 };
 
+export enum AppealDecision {
+  unvoted,
+  release,
+  cancel,
+}
+
 export type PreparedOrderMethod = {
   orderHash: string;
   method: OrderMethod;
