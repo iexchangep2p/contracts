@@ -21,7 +21,7 @@ library LibAppeal {
             revert IOrder.OrderPaidRequired();
         }
         if (
-            _caller != o.orders[_orderHash].merchant ||
+            _caller != o.orders[_orderHash].merchant &&
             _caller != o.orders[_orderHash].trader
         ) {
             revert IOrder.MustBeMerchantOrTrader();
