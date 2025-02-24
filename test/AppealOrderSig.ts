@@ -117,7 +117,12 @@ describe("Appeal Order - OrderSig", function () {
     );
     await expect(orderSigProxy.appealOrder(appealOrderMethod, appealOrderSig))
       .to.emit(orderSigProxy, "OrderAppealed")
-      .withArgs(orderHash, kofiMerchant.address, AppealDecision.unvoted, OrderState.appealed, anyValue);
-      
+      .withArgs(
+        orderHash,
+        kofiMerchant.address,
+        AppealDecision.unvoted,
+        OrderState.appealed,
+        anyValue
+      );
   });
 });
