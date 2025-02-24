@@ -39,3 +39,9 @@ export type OrderMethodPayload = {
   method: OrderMethod;
   expiry: BigInt;
 };
+
+export enum AppealDecision {
+  unvoted,
+  release,
+  cancel,
+}
