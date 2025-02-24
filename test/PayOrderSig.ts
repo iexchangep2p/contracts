@@ -15,6 +15,7 @@ import {
   orderSigChain,
   OrderState,
   OrderType,
+  PreparedOrderMethod,
   sameChainOrder,
   signOrder,
   signOrderMethod,
@@ -32,7 +33,6 @@ describe("Pay Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -47,6 +47,8 @@ describe("Pay Order - OrderSig", function () {
       chainId,
       chainId
     );
+
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -87,10 +89,15 @@ describe("Pay Order - OrderSig", function () {
         await orderSigProxy.getAddress(),
         oneGrand
       );
+    
+     const payMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
 
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      payMethodPayload
     );
     const payOrderSig = await signOrderMethod(
       amaTrader,
@@ -129,6 +136,7 @@ describe("Pay Order - OrderSig", function () {
       chainId,
       chainId
     );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -171,9 +179,13 @@ describe("Pay Order - OrderSig", function () {
       );
 
     //revert for expired sig
-    const expiredPayOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+     const expiredPayMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+    const expiredPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      expiredPayMethodPayload
     );
     expiredPayOrderMethod.expiry = BigInt(
       Math.floor(Date.now() / 1000) - 60 * 15
@@ -196,9 +208,13 @@ describe("Pay Order - OrderSig", function () {
       nonExistentOrder,
       domain
     );
-    const nonExistentPayOrderMethod: OrderMethodPayload = makeOrderMethod(
-      nonExistentOrderHash,
-      OrderMethod.pay
+     const nonExistentPayMethodPayload: OrderMethodPayload = {
+       orderHash: nonExistentOrderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+    const nonExistentPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
+     nonExistentPayMethodPayload
     );
     const nonExistentPayOrderSig = await signOrderMethod(
       amaTrader,
@@ -211,9 +227,13 @@ describe("Pay Order - OrderSig", function () {
     ).to.be.revertedWithCustomError(orderSigProxy, "OrderDoesNotExists");
 
     //revert for not trader
-    const notTraderPayOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+     const notTraderPayMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+    const notTraderPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      notTraderPayMethodPayload
     );
     const notTraderPayOrderSig = await signOrderMethod(
       yaaBrokie,
@@ -225,9 +245,13 @@ describe("Pay Order - OrderSig", function () {
     ).to.be.revertedWithCustomError(orderSigProxy, "MustBeTrader");
 
     //revert for invalid method call
-    const invalidTraderPayOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.cancel
+     const invalidPayMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.cancel,
+       expiry,
+     };
+    const invalidTraderPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      invalidPayMethodPayload
     );
     const invalidTraderPayOrderSig = await signOrderMethod(
       amaTrader,
@@ -242,9 +266,13 @@ describe("Pay Order - OrderSig", function () {
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidOrderMethodCall");
 
     //passing paid order
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+     const payMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      payMethodPayload
     );
     const payOrderSig = await signOrderMethod(
       amaTrader,
@@ -288,6 +316,7 @@ describe("Pay Order - OrderSig", function () {
       chainId,
       chainId
     );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -325,9 +354,13 @@ describe("Pay Order - OrderSig", function () {
       .to.emit(usdt, "Transfer")
       .withArgs(amaTrader.address, await orderSigProxy.getAddress(), oneGrand);
 
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+     const payMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      payMethodPayload
     );
 
     //revert for MustBeMerchant

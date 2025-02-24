@@ -15,6 +15,7 @@ import {
   orderSigChain,
   OrderState,
   OrderType,
+  PreparedOrderMethod,
   sameChainOrder,
   signOrder,
   signOrderMethod,
@@ -47,6 +48,8 @@ describe("Accept OrderSig", function () {
       chainId,
       chainId
     );
+
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -83,9 +86,13 @@ describe("Accept OrderSig", function () {
     await expect(orderSigProxy.createOrder(order, traderSig, "0x")).to.not.be
       .reverted;
 
-    const acceptOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.accept
+       const acceptMethodPayload: OrderMethodPayload = {
+         orderHash,
+         method: OrderMethod.accept,
+         expiry,
+       };
+    const acceptOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      acceptMethodPayload
     );
     const merchantSigForAccept = await signOrderMethod(
       kofiMerchant,
@@ -102,9 +109,13 @@ describe("Accept OrderSig", function () {
     ).to.be.revertedWithCustomError(orderSigProxy, "MustBeMerchant");
 
     //revert for expired sig
-    const expiryOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.accept
+     const expiryMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.accept,
+       expiry,
+     };
+    const expiryOrderMethod: PreparedOrderMethod = makeOrderMethod(
+     expiryMethodPayload
     );
     expiryOrderMethod.expiry = BigInt(Math.floor(Date.now() / 1000) - 60 * 15);
 
@@ -130,9 +141,13 @@ describe("Accept OrderSig", function () {
     ).to.be.revertedWithCustomError(orderSigProxy, "MustBeMerchant");
 
     //revert for invalid method
-    const invalidOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.release
+     const invalidMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.release,
+       expiry,
+     };
+    const invalidOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      invalidMethodPayload
     );
 
     const invalidMerchantSigForAccept = await signOrderMethod(
@@ -154,9 +169,13 @@ describe("Accept OrderSig", function () {
 
     const nonExistentOderHash = createOrderTypedDataHash(nonExistentOrder, domain);
 
-    const nonExistentAcceptOrderMethod: OrderMethodPayload = makeOrderMethod(
-      nonExistentOderHash,
-      OrderMethod.accept
+     const nonExistentAcceptMethodPayload: OrderMethodPayload = {
+       orderHash: nonExistentOderHash,
+       method: OrderMethod.accept,
+       expiry,
+     };
+    const nonExistentAcceptOrderMethod: PreparedOrderMethod = makeOrderMethod(
+     nonExistentAcceptMethodPayload
     );
     await expect(
       (orderSigProxy.connect(kofiMerchant) as any).acceptOrder(
