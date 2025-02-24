@@ -7,7 +7,7 @@ import {
   AbiCoder,
   concat,
 } from "ethers";
-import { CreateOrder, OrderMethodPayload, OrderType } from "./types";
+import { CreateOrder, OrderMethodPayload, OrderType, PreparedOrderMethod } from "./types";
 
 export function iexDomain(
   chainId: number,
@@ -122,7 +122,7 @@ export function encodedOrderMethodPayload(): TypedDataEncoder {
 }
 
 export function createOrderMethodTypedDataHash(
-  orderMethod: OrderMethodPayload,
+  orderMethod: PreparedOrderMethod,
   domain: TypedDataDomain
 ): string {
   return TypedDataEncoder.hash(
@@ -134,7 +134,7 @@ export function createOrderMethodTypedDataHash(
 
 export async function signOrderMethod(
   signer: Signer,
-  orderMethod: OrderMethodPayload,
+  orderMethod: PreparedOrderMethod,
   domain: TypedDataDomain
 ): Promise<string> {
   return signer.signTypedData(
