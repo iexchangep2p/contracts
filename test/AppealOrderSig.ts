@@ -19,6 +19,7 @@ import {
   signOrder,
   AppealDecision,
   signOrderMethod,
+  PreparedOrderMethod,
 } from "../client";
 
 describe("Appeal Order - OrderSig", function () {
@@ -51,6 +52,7 @@ describe("Appeal Order - OrderSig", function () {
       chainId,
       chainId
     );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -92,10 +94,14 @@ describe("Appeal Order - OrderSig", function () {
         oneGrand
       );
 
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const payMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.pay
-    );
+      method: OrderMethod.pay,
+      expiry,
+    };
+
+    const payOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(payMethodPayload);
     const payOrderSig = await signOrderMethod(
       amaTrader,
       payOrderMethod,
@@ -106,9 +112,14 @@ describe("Appeal Order - OrderSig", function () {
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
 
-    const appealOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+     const appealMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+
+    const appealOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      appealMethodPayload
     );
     const appealOrderSig = await signOrderMethod(
       kofiMerchant,

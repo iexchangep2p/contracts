@@ -6,6 +6,8 @@ import "../libraries/LibOrder.sol";
 import "../libraries/LibAppeal.sol";
 import "../libraries/LibSig.sol";
 import "../globals/Errors.sol";
+import "hardhat/console.sol";
+
 contract OrderSig is IOrderSig {
     modifier validSig(bytes calldata _sig) {
         if (HelpersLib.compareBytes(_sig, HelpersLib.emptyBytes)) {
@@ -45,6 +47,8 @@ contract OrderSig is IOrderSig {
         if (_order.trader != trader) {
             revert InvalidSigner();
         }
+        console.logBytes(_merchantSig);
+        console.logBytes(HelpersLib.emptyBytes);
         if (HelpersLib.compareBytes(_merchantSig, HelpersLib.emptyBytes)) {
             state = OrderState.pending;
         } else {

@@ -26,6 +26,20 @@ export type CreateOrder = {
   duration: BigInt;
 };
 
+export type PreCreateOrder = {
+  trader: string;
+  merchant: string;
+  traderChain: number;
+  merchantChain: number;
+  token: string;
+  currency: string;
+  paymentMethod: string;
+  orderType: OrderType;
+  quantity: number;
+  expiry: number;
+  duration: number;
+};
+
 export enum OrderMethod {
   accept,
   pay,
@@ -37,7 +51,7 @@ export enum OrderMethod {
 export type OrderMethodPayload = {
   orderHash: string;
   method: OrderMethod;
-  expiry: BigInt;
+  expiry: number;
 };
 
 export enum AppealDecision {
@@ -45,3 +59,9 @@ export enum AppealDecision {
   release,
   cancel,
 }
+
+export type PreparedOrderMethod = {
+  orderHash: string;
+  method: OrderMethod;
+  expiry: BigInt;
+};
