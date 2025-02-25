@@ -1,4 +1,8 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import {
+  loadFixture,
+  setBalance,
+  time,
+} from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { ethers, ignition } from "hardhat";
 import { expect } from "chai";
@@ -15,101 +19,15 @@ import {
   orderSigChain,
   OrderState,
   OrderType,
-  PreparedOrderMethod,
   sameChainOrder,
   signOrder,
+  AppealDecision,
   signOrderMethod,
+  PreparedOrderMethod,
 } from "../client";
 
-describe("Pay Order - OrderSig", function () {
-  it("Buy[Pay Order]", async function () {
-    const {
-      kofiMerchant,
-      amaTrader,
-      oneGrand,
-      usdt,
-      currency,
-      paymentMethod,
-      oneGrandNumber,
-      chainId,
-      orderSigProxy,
-      iExchangeP2P,
-    } = await loadFixture(deployIExchange);
-
-    const order = sameChainOrder(
-      amaTrader.address,
-      kofiMerchant.address,
-      await usdt.getAddress(),
-      ethers.keccak256(currency),
-      ethers.keccak256(paymentMethod),
-      oneGrandNumber,
-      OrderType.buy,
-      chainId,
-      chainId
-    );
-
-    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
-
-    const sigchain = orderSigChain(order);
-    const sigchainAddress = await orderSigProxy.getAddress();
-    const domain = iexDomain(sigchain, sigchainAddress);
-
-    const domainHash = iexDomainHash(domain);
-
-    const orderHash = createOrderTypedDataHash(order, domain);
-
-    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
-    expect(domainHash).to.equal(sigchainDomainHash);
-    const traderSig = await signOrder(amaTrader, order, domain);
-    const merchantSig = await signOrder(kofiMerchant, order, domain);
-
-    const traderAddress = ethers.verifyTypedData(
-      domain,
-      encodedCreateOrder().types,
-      order,
-      traderSig
-    );
-    expect(amaTrader.address).to.equal(traderAddress);
-
-    const merchantAddress = ethers.verifyTypedData(
-      domain,
-      encodedCreateOrder().types,
-      order,
-      merchantSig
-    );
-
-    expect(kofiMerchant.address).to.equal(merchantAddress);
-
-    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
-
-    await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
-      .to.emit(usdt, "Transfer")
-      .withArgs(
-        kofiMerchant.address,
-        await orderSigProxy.getAddress(),
-        oneGrand
-      );
-    
-     const payMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-
-    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      payMethodPayload
-    );
-    const payOrderSig = await signOrderMethod(
-      amaTrader,
-      payOrderMethod,
-      domain
-    );
-    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
-      .to.emit(orderSigProxy, "OrderPaid")
-      .withArgs(orderHash, OrderState.paid);
-  });
-
-  it("Buy[Reverts for Pay Order]", async function () {
+describe("Cancel - OrderSig", function () {
+  it("Should[Cancel]", async function () {
     const {
       kofiMerchant,
       amaTrader,
@@ -121,9 +39,11 @@ describe("Pay Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
+      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
+
+    //createOrder → acceptOrder → cancel
 
     const order = sameChainOrder(
       amaTrader.address,
@@ -178,118 +98,204 @@ describe("Pay Order - OrderSig", function () {
         oneGrand
       );
 
-    //revert for expired sig
-     const expiredPayMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-    const expiredPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      expiredPayMethodPayload
-    );
-    expiredPayOrderMethod.expiry = BigInt(
-      Math.floor(Date.now() / 1000) - 60 * 15
-    );
-    const expiredPayOrderSig = await signOrderMethod(
+    //passing canceled
+    const cancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+
+    const cancelOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(cancelMethodPayload);
+    const cancelOrderSig = await signOrderMethod(
       amaTrader,
-      expiredPayOrderMethod,
+      cancelOrderMethod,
+      domain
+    );
+
+    await expect(orderSigProxy.cancelOrder(cancelOrderMethod, cancelOrderSig))
+      .to.emit(orderSigProxy, "OrderCancelled")
+      .withArgs(orderHash, OrderState.cancelled);
+  });
+  it("Buy - Should[Reverts for Cancel]", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      yaaBrokie,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      viewProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    //createOrder → acceptOrder → cancel
+    //Buy -> Trader cancel
+    //Sell -> Merchant cancel
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
+
+    await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        kofiMerchant.address,
+        await orderSigProxy.getAddress(),
+        oneGrand
+      );
+
+    //Cancel method
+    const cancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+
+    const cancelOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(cancelMethodPayload);
+    const cancelOrderSig = await signOrderMethod(
+      amaTrader,
+      cancelOrderMethod,
+      domain
+    );
+    //revert for expired sig
+    const newExpiry = Math.floor(Date.now() / 1000) - 60 * 15;
+
+    const expiryCancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry: newExpiry,
+    };
+    const expiryCancelOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      expiryCancelMethodPayload
+    );
+    const expiredMerchantSigForCancel = await signOrderMethod(
+      kofiMerchant,
+      expiryCancelOrderMethod,
       domain
     );
 
     await expect(
-      orderSigProxy.payOrder(expiredPayOrderMethod, expiredPayOrderSig)
+      orderSigProxy.cancelOrder(
+        expiryCancelOrderMethod,
+        expiredMerchantSigForCancel
+      )
     ).to.be.revertedWithCustomError(orderSigProxy, "SignatureExpired");
 
-    //revert for non-existing order
-    const nonExistentOrder = { ...order };
-    nonExistentOrder.merchant = ethers.Wallet.createRandom().address;
+    //revert for invalid sig
+    await expect(
+      orderSigProxy.cancelOrder(cancelMethodPayload, "0x")
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
 
+    //revert for invalid method
+    const invalidCancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.release,
+      expiry,
+    };
+    const invalidCancelOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      invalidCancelMethodPayload
+    );
+
+    await expect(
+      orderSigProxy.cancelOrder(invalidCancelOrderMethod, cancelOrderSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidOrderMethodCall");
+
+    //revert for OrderDoesNotExists
+    const nonExistentOrder = { ...order, trader: yaaBrokie.address };
     const nonExistentOrderHash = createOrderTypedDataHash(
       nonExistentOrder,
       domain
     );
-     const nonExistentPayMethodPayload: OrderMethodPayload = {
-       orderHash: nonExistentOrderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-    const nonExistentPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
-     nonExistentPayMethodPayload
+
+    const nonExistentMethodPayload: OrderMethodPayload = {
+      orderHash: nonExistentOrderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+    const nonExistentOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      nonExistentMethodPayload
     );
-    const nonExistentPayOrderSig = await signOrderMethod(
+    const nonExistentOrderSig = await signOrderMethod(
       amaTrader,
-      nonExistentPayOrderMethod,
+      nonExistentOrderMethod,
       domain
     );
 
     await expect(
-      orderSigProxy.payOrder(nonExistentPayOrderMethod, nonExistentPayOrderSig)
+      orderSigProxy.cancelOrder(nonExistentOrderMethod, nonExistentOrderSig)
     ).to.be.revertedWithCustomError(orderSigProxy, "OrderDoesNotExists");
 
-    //revert for not trader
-     const notTraderPayMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-    const notTraderPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      notTraderPayMethodPayload
-    );
-    const notTraderPayOrderSig = await signOrderMethod(
-      yaaBrokie,
-      notTraderPayOrderMethod,
+    //revert for MustBeTrader
+    const notTraderSig = await signOrderMethod(
+      kofiMerchant,
+      cancelOrderMethod,
       domain
     );
     await expect(
-      orderSigProxy.payOrder(notTraderPayOrderMethod, notTraderPayOrderSig)
+      orderSigProxy.cancelOrder(cancelOrderMethod, notTraderSig)
     ).to.be.revertedWithCustomError(orderSigProxy, "MustBeTrader");
 
-    //revert for invalid method call
-     const invalidPayMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.cancel,
-       expiry,
-     };
-    const invalidTraderPayOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      invalidPayMethodPayload
-    );
-    const invalidTraderPayOrderSig = await signOrderMethod(
-      amaTrader,
-      invalidTraderPayOrderMethod,
-      domain
-    );
-    await expect(
-      orderSigProxy.payOrder(
-        invalidTraderPayOrderMethod,
-        invalidTraderPayOrderSig
-      )
-    ).to.be.revertedWithCustomError(orderSigProxy, "InvalidOrderMethodCall");
+    //Buy -> Trader cancel, send tokens back to merchant
+    const merchantBalanceBefore = await usdt.balanceOf(kofiMerchant.address);
 
-    //passing paid order
-     const payMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      payMethodPayload
-    );
-    const payOrderSig = await signOrderMethod(
-      amaTrader,
-      payOrderMethod,
-      domain
-    );
-    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
-      .to.emit(orderSigProxy, "OrderPaid")
-      .withArgs(orderHash, OrderState.paid);
+    //passing cancelOrder
+    await expect(orderSigProxy.cancelOrder(cancelOrderMethod, cancelOrderSig))
+      .to.emit(orderSigProxy, "OrderCancelled")
+      .withArgs(orderHash, OrderState.cancelled);
 
-    //revert for OrderAcceptedRequired
-    await expect(
-      orderSigProxy.payOrder(payOrderMethod, payOrderSig)
-    ).to.be.revertedWithCustomError(orderSigProxy, "OrderAcceptedRequired");
+    //check merchant usdt balance after()
+    const merchantBalanceAfter = await usdt.balanceOf(kofiMerchant.address);
+    expect(merchantBalanceAfter).to.equal(merchantBalanceBefore + oneGrand);
   });
 
-  it("Sell[Pay Order - Pending State, Merchant Pay]", async function () {
+  it("Sell - Should[Cancel, Reverts for Cancel]", async function () {
     const {
       kofiMerchant,
       amaTrader,
@@ -301,9 +307,11 @@ describe("Pay Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
+      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
+
+    //createOrder → acceptOrder → cancel
 
     const order = sameChainOrder(
       amaTrader.address,
@@ -354,41 +362,52 @@ describe("Pay Order - OrderSig", function () {
       .to.emit(usdt, "Transfer")
       .withArgs(amaTrader.address, await orderSigProxy.getAddress(), oneGrand);
 
-     const payMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      payMethodPayload
-    );
-
     //revert for MustBeMerchant
-    const notMerchantpayOrderSig = await signOrderMethod(
-      yaaBrokie,
-      payOrderMethod,
+    const notMerchantCancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+
+    const notMerchantCancelOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      notMerchantCancelMethodPayload
+    );
+    const notMerchantCancelOrderSig = await signOrderMethod(
+      amaTrader,
+      notMerchantCancelOrderMethod,
       domain
     );
+
     await expect(
-      orderSigProxy.payOrder(payOrderMethod, notMerchantpayOrderSig)
+      orderSigProxy.cancelOrder(
+        notMerchantCancelOrderMethod,
+        notMerchantCancelOrderSig
+      )
     ).to.be.revertedWithCustomError(orderSigProxy, "MustBeMerchant");
 
-    const payOrderSig = await signOrderMethod(
+    //passing canceled
+    const cancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+
+    const cancelOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(cancelMethodPayload);
+    const cancelOrderSig = await signOrderMethod(
       kofiMerchant,
-      payOrderMethod,
+      cancelOrderMethod,
       domain
     );
-    //pass payorder
-    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
-      .to.emit(orderSigProxy, "OrderPaid")
-      .withArgs(orderHash, OrderState.paid);
 
-    //revert for OrderPendingOrAcceptedRequired
-    await expect(
-      orderSigProxy.payOrder(payOrderMethod, payOrderSig)
-    ).to.be.revertedWithCustomError(
-      orderSigProxy,
-      "OrderPendingOrAcceptedRequired"
-    );
+    //check balances Sell -> Merchant cancel, send tokens back to Trader
+    const traderBalanceBefore = await usdt.balanceOf(amaTrader.address);
+
+    await expect(orderSigProxy.cancelOrder(cancelOrderMethod, cancelOrderSig))
+      .to.emit(orderSigProxy, "OrderCancelled")
+      .withArgs(orderHash, OrderState.cancelled);
+
+    const traderBalanceAfter = await usdt.balanceOf(amaTrader.address);
+    expect(traderBalanceAfter).to.equal(traderBalanceBefore + oneGrand);
   });
 });

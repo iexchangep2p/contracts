@@ -15,6 +15,7 @@ import {
   orderSigChain,
   OrderState,
   OrderType,
+  PreparedOrderMethod,
   sameChainOrder,
   signOrder,
   signOrderMethod,
@@ -48,6 +49,7 @@ describe("Release Order - OrderSig", function () {
       chainId
     );
 
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
     const domain = iexDomain(sigchain, sigchainAddress);
@@ -88,10 +90,13 @@ describe("Release Order - OrderSig", function () {
         oneGrand
       );
 
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const payMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.pay
-    );
+      method: OrderMethod.pay,
+      expiry,
+    };
+    const payOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(payMethodPayload);
     const payOrderSig = await signOrderMethod(
       amaTrader,
       payOrderMethod,
@@ -102,10 +107,13 @@ describe("Release Order - OrderSig", function () {
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
 
-    const releaseOrderMethod: OrderMethodPayload = makeOrderMethod(
+    const releaseMethodPayload: OrderMethodPayload = {
       orderHash,
-      OrderMethod.release
-    );
+      method: OrderMethod.release,
+      expiry,
+    };
+    const releaseOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(releaseMethodPayload);
     const releaseOrderSig = await signOrderMethod(
       kofiMerchant,
       releaseOrderMethod,
@@ -157,6 +165,7 @@ describe("Release Order - OrderSig", function () {
       chainId,
       chainId
     );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
 
     const sigchain = orderSigChain(order);
     const sigchainAddress = await orderSigProxy.getAddress();
@@ -194,9 +203,13 @@ describe("Release Order - OrderSig", function () {
       .to.emit(usdt, "Transfer")
       .withArgs(amaTrader.address, await orderSigProxy.getAddress(), oneGrand);
 
-    const payOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+       const payMethodPayload: OrderMethodPayload = {
+         orderHash,
+         method: OrderMethod.pay,
+         expiry,
+       };
+    const payOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      payMethodPayload
     );
     const payOrderSig = await signOrderMethod(
       kofiMerchant,
@@ -208,9 +221,14 @@ describe("Release Order - OrderSig", function () {
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
 
-    const releaseOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.release
+     const releaseMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.release,
+       expiry,
+     };
+
+    const releaseOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      releaseMethodPayload
     );
     const releaseOrderSig = await signOrderMethod(
       amaTrader,
@@ -219,9 +237,13 @@ describe("Release Order - OrderSig", function () {
     );
 
     //revert for releaseOrder: expired sig
-    const expiredReleaseOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.release
+     const expiredReleaseMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.release,
+       expiry,
+     };
+    const expiredReleaseOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      expiredReleaseMethodPayload
     );
     expiredReleaseOrderMethod.expiry = BigInt(
       Math.floor(Date.now() / 1000 - 60 * 15)
@@ -248,9 +270,13 @@ describe("Release Order - OrderSig", function () {
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
 
     //revert for InvalidOrderMethodCall
-    const invalidReleaseOrderMethod: OrderMethodPayload = makeOrderMethod(
-      orderHash,
-      OrderMethod.pay
+     const invalidReleaseMethodPayload: OrderMethodPayload = {
+       orderHash,
+       method: OrderMethod.pay,
+       expiry,
+     };
+    const invalidReleaseOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      invalidReleaseMethodPayload
     );
     await expect(
       orderSigProxy.releaseOrder(invalidReleaseOrderMethod, releaseOrderSig)
@@ -266,9 +292,13 @@ describe("Release Order - OrderSig", function () {
       domain
     );
 
-    const nonExistentOrderMethod: OrderMethodPayload = makeOrderMethod(
-      nonExistentOrderHash,
-      OrderMethod.release
+     const nonExistentpayMethodPayload: OrderMethodPayload = {
+       orderHash: nonExistentOrderHash,
+       method: OrderMethod.release,
+       expiry,
+     };
+    const nonExistentOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      nonExistentpayMethodPayload
     );
 
     await expect(
