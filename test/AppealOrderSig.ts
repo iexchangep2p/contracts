@@ -268,7 +268,7 @@ describe("Appeal Order - OrderSig", function () {
       orderSigProxy.appealOrder(expiryOrderMethod, expiredMerchantSigForAppeal)
     ).to.be.revertedWithCustomError(orderSigProxy, "SignatureExpired");
 
-    //revrt for invalid sig
+    //revert for invalid sig
     await expect(
       orderSigProxy.appealOrder(payOrderMethod, "0x")
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidSignature");
