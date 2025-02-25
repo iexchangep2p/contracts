@@ -94,49 +94,23 @@ describe("Cancel - OrderSig", function () {
         oneGrand
       );
 
-    const payMethodPayload: OrderMethodPayload = {
+    //passing canceled
+    const cancelMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.cancel,
       expiry,
     };
 
-    const payOrderMethod: PreparedOrderMethod =
-      makeOrderMethod(payMethodPayload);
-    const payOrderSig = await signOrderMethod(
+    const cancelOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(cancelMethodPayload);
+    const cancelOrderSig = await signOrderMethod(
       amaTrader,
-      payOrderMethod,
+      cancelOrderMethod,
       domain
     );
 
-    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
-      .to.emit(orderSigProxy, "OrderPaid")
-      .withArgs(orderHash, OrderState.paid);
-
-     const appealMethodPayload: OrderMethodPayload = {
-       orderHash,
-       method: OrderMethod.pay,
-       expiry,
-     };
-
-    const appealOrderMethod: PreparedOrderMethod = makeOrderMethod(
-      appealMethodPayload
-    );
-    const appealOrderSig = await signOrderMethod(
-      kofiMerchant,
-      appealOrderMethod,
-      domain
-    );
-    await expect(orderSigProxy.appealOrder(appealOrderMethod, appealOrderSig))
-      .to.emit(orderSigProxy, "OrderAppealed")
-      .withArgs(
-        orderHash,
-        kofiMerchant.address,
-        AppealDecision.unvoted,
-        OrderState.appealed,
-        anyValue
-      );
-    console.log("Appeals: ", await viewProxy.appeals(orderHash));
-    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeals(orderHash);
-    expect(appealsHash).to.equal(orderHash);
+    await expect(orderSigProxy.cancelOrder(cancelOrderMethod, cancelOrderSig))
+      .to.emit(orderSigProxy, "OrderCancelled")
+      .withArgs(orderHash, OrderState.cancelled);
   });
 });
