@@ -29,7 +29,7 @@ import "dotenv/config";
   const quantity: number = 1000;
   const orderType: OrderType = OrderType.sell;
   const chain: number = parseInt(process.env.DUMMY_CHAIN!);
-  const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
+  const expiry = Math.floor(Date.now() / 1000) + 60 * 60;
   const duration = 1800;
   const preOrder: PreCreateOrder = {
     trader,
