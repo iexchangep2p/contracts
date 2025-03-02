@@ -21,9 +21,12 @@ export async function deployIExchange() {
   } = await ignition.deploy(IgniteTestModule, {
     displayUi: false,
   });
+  const TokenMultiSend = await ethers.getContractFactory("TokenMultiSend");
+  const tokenMulti = await TokenMultiSend.deploy();
   const IXToken = await ethers.getContractFactory("IXToken");
   const ixToken = await IXToken.deploy();
   const minStakeAmount = BigInt(1 * 1e18);
+  const oneBil = BigInt(minStakeAmount * BigInt(1e9));
   const oneMil = BigInt(minStakeAmount * BigInt(1e6));
   const oneGrand = BigInt(minStakeAmount * BigInt(1e3));
   const orderFeeBasis = 100;
@@ -36,11 +39,19 @@ export async function deployIExchange() {
   const USDT = await ethers.getContractFactory("TokenCutter");
   const usdt = await USDT.deploy("IX USDT", "USDT");
 
-  await usdt.transfer(kofiMerchant, oneMil);
-  await ixToken.transfer(kofiMerchant, oneMil);
+  await usdt.approve(await tokenMulti.getAddress(), oneBil);
+  await ixToken.approve(await tokenMulti.getAddress(), oneBil);
 
-  await usdt.transfer(amaTrader, oneMil);
-  await ixToken.transfer(amaTrader, oneMil);
+  await tokenMulti.send(
+    [await usdt.getAddress(), await ixToken.getAddress()],
+    oneMil,
+    kofiMerchant
+  );
+  await tokenMulti.send(
+    [await usdt.getAddress(), await ixToken.getAddress()],
+    oneMil,
+    amaTrader
+  );
 
   const DummySender = await ethers.getContractFactory("DummySender");
   const dummySender = await DummySender.deploy();
