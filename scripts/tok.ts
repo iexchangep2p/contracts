@@ -1,0 +1,106 @@
+import "dotenv/config";
+import { ignition, ethers, network } from "hardhat";
+
+async function main() {
+  const gasTanks: { [key: string]: string } = {
+    "0xFD5029788f20687fC784a6839E872ded2Cf90855": process.env.T1!,
+    "0xF95664c59cF73e7A240bD957Fe3F8D075373f3Cd": process.env.T2!,
+    "0x750c0F0C7D309f4FcecEACDe514fd2e7B7656e27": process.env.T3!,
+    "0xa7C8951b675843212fe46309bdE84737B5c005Cc": process.env.T4!,
+    "0x0f927f11123df987E1023F430e1c8649A043c541": process.env.T5!,
+    "0x30f69f61C76a2654df340E8bc7Dc019eD4d4b844": process.env.T6!,
+    "0x4a21294887EEB3E84E759Ca519B7D4b460c6091e": process.env.T7!,
+    "0x458D7D5dF9e1D3f125e8E4453e9098370ccae50f": process.env.T8!,
+    "0x80f7d0135c37FFDBbE48999f016D0A9d747A7e24": process.env.T9!,
+    "0x6b3899dcd4C2CeEbb0f2FE7E85e91f7AB9D333CD": process.env.T10!,
+  };
+
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  const testTokens: { [key: number]: string[] } = {
+    421614: [
+      "0xEd64A15A6223588794A976d344990001a065F3f1",
+      "0x31556A6Fd2D2De4775B4df43c877cF7178499b49",
+    ],
+    2810: [
+      "0x6805F4d4BAB919f4e1e9fa593A03E5d13CBeDfb2",
+      "0x9bABB7c87eb0D2b39981D12e44196b52694ed7a5",
+    ],
+    4202: [
+      "0x181D675e1d7958Aa0034A45fDeE619Fd345Fa71A",
+      "0x4dCEDaf993965b63FFbA4A6f5bF666B6a8D3875D",
+    ],
+    84532: [
+      "0x7FC7885B959040Ef1AAa869992EefCBe15BbFDFB",
+      "0xA344177685bb29E42bbf10eD268aEC076282807D",
+    ],
+  };
+  const minStakeAmount = BigInt(5 * 1e18);
+  const fiveMil = BigInt(minStakeAmount * BigInt(1e6));
+  const oneTril = BigInt(minStakeAmount * BigInt(1e12));
+
+  const tokenMulti: { [key: number]: string } = {
+    421614: "0x466182Fb77589D613BcbF2302833Ac8A17f37818",
+    2810: "0xfE229c222A1B38929A52be37D04253bce0E49415",
+    4202: "0x3cc6933D09e7334edf3C610812b17628AC5c1404",
+    84532: "0xD06C8424731e1A265d75D1cB57FCBf80E4C05290",
+  };
+  const chain = 421614;
+  const token1 = await ethers.getContractAt(
+    "TokenCutter",
+    testTokens[chain][0]
+  );
+  const token2 = await ethers.getContractAt(
+    "TokenCutter",
+    testTokens[chain][1]
+  );
+
+  const tm = tokenMulti[chain];
+
+  for (const t of Object.keys(gasTanks)) {
+    const w = new ethers.Wallet(gasTanks[t], ethers.provider);
+
+    const tx = await token1.connect(w).approve(tm, oneTril);
+    console.log(`Just approved ${tx.hash} to ${t}`);
+
+    await delay(3000);
+
+    const txt = await token2.connect(w).approve(tm, oneTril);
+    console.log(`Just approved ${txt.hash} to ${t}`);
+
+    await delay(3000);
+  }
+
+  //   for (const t of Object.keys(gasTanks)) {
+  //     const tx = await token1.transfer(t, fiveMil);
+  //     console.log(`Just transfered ${tx.hash} to ${t}`);
+
+  //     await delay(3000);
+  //   }
+
+  //   for (const t of Object.keys(gasTanks)) {
+  //     const tx = await token2.transfer(t, fiveMil);
+  //     console.log(`Just transfered ${tx.hash} to ${t}`);
+
+  //     await delay(3000);
+  //   }
+
+  //   for (const t of Object.keys(gasTanks)) {
+  //     const [s] = await ethers.getSigners();
+  //     const tx = await s.sendTransaction({
+  //       to: t,
+  //       value: ethers.parseEther("0.01"),
+  //     });
+  //     console.log(`Just transfered ${tx.hash} to ${t}`);
+
+  //     await delay(3000);
+  //   }
+}
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

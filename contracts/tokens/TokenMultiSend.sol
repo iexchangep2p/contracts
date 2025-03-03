@@ -22,7 +22,7 @@ contract TokenMultiSend {
             SafeERC20.safeTransferFrom(
                 IERC20(_tokens[i]),
                 msg.sender,
-                _tokens[i],
+                _to,
                 _val
             );
             emit Distributed(msg.sender, _to, _tokens[i], _val);
