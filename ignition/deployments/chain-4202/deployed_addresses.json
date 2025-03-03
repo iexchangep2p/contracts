@@ -28,5 +28,5 @@
   "SenderModule#DummySender": "0xb85990005d8A90dCaaF2c0327BEd14D85Cc717fD",
   "TestTokenModule#IXUSDC": "0x181D675e1d7958Aa0034A45fDeE619Fd345Fa71A",
   "TestTokenModule#IXUSDT": "0x4dCEDaf993965b63FFbA4A6f5bF666B6a8D3875D",
-  "TokenMultiSendModule#TokenMultiSend": "0x3cc6933D09e7334edf3C610812b17628AC5c1404"
+  "TokenMultiSendModule#TokenMultiSend": "0x7e973D307BcBBD488Af2661b04d71c9841e75765"
 }

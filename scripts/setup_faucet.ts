@@ -41,12 +41,12 @@ async function main() {
   const oneTril = BigInt(minStakeAmount * BigInt(1e12));
 
   const tokenMulti: { [key: number]: string } = {
-    421614: "0x466182Fb77589D613BcbF2302833Ac8A17f37818",
-    2810: "0xfE229c222A1B38929A52be37D04253bce0E49415",
-    4202: "0x3cc6933D09e7334edf3C610812b17628AC5c1404",
-    84532: "0xD06C8424731e1A265d75D1cB57FCBf80E4C05290",
+    421614: "0x72e6102Ea4d2837C044D12423a6F2281aeBCD28B",
+    2810: "0x65C69f8c9a871F790812D380b6150C921CB5610B",
+    4202: "0x7e973D307BcBBD488Af2661b04d71c9841e75765",
+    84532: "0xf35582f788c1853c75Fb0b9D9286BaC41133134b",
   };
-  const chain = 421614;
+  const chain = 4202;
   const token1 = await ethers.getContractAt(
     "TokenCutter",
     testTokens[chain][0]
