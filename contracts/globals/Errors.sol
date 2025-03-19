@@ -12,3 +12,4 @@ error InvalidChainId();
 error InvalidSigner();
 error InvalidSignature();
 error SignatureExpired();
+error CrossChainUnsupported();

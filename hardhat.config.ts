@@ -36,6 +36,14 @@ const config: HardhatUserConfig = {
       url: "https://sepolia-rpc.scroll.io",
       accounts: [DEPLOY_KEY],
     },
+    celoAlfajores: {
+      url: "https://alfajores-forno.celo-testnet.org",
+      accounts: [DEPLOY_KEY],
+    },
+    uniSepolia: {
+      url: "https://sepolia.unichain.org",
+      accounts: [DEPLOY_KEY],
+    },
     inkSepolia: {
       url: "https://rpc-qnd-sepolia.inkonchain.com",
       accounts: [DEPLOY_KEY],
@@ -65,8 +73,10 @@ const config: HardhatUserConfig = {
       bscTestnet: ETHERSCAN_KEY,
       opTestnet: ETHERSCAN_KEY,
       inkSepolia: "anything",
-      cod: "anything",
+      liskTestnet: "anything",
       hederaTestnet: "anything",
+      celoAlfajores: "anything",
+      uniSepolia: "anything"
     },
     customChains: [
       {
@@ -105,8 +115,24 @@ const config: HardhatUserConfig = {
         network: "scrollSepolia",
         chainId: 534351,
         urls: {
-          apiURL: "https://api-sepolia.scrollscan.com/api",
-          browserURL: "https://sepolia.scrollscan.com",
+          apiURL: "https://scroll-sepolia.blockscout.com/api",
+          browserURL: "https://scroll-sepolia.blockscout.com",
+        },
+      },
+      {
+        network: "celoAlfajores",
+        chainId: 44787,
+        urls: {
+          apiURL: "https://celo-alfajores.blockscout.com/api",
+          browserURL: "https://celo-alfajores.blockscout.com",
+        },
+      },
+      {
+        network: "uniSepolia",
+        chainId: 1301,
+        urls: {
+          apiURL: "https://unichain-sepolia.blockscout.com/api",
+          browserURL: "https://unichain-sepolia.blockscout.com",
         },
       },
       {
@@ -138,7 +164,7 @@ const config: HardhatUserConfig = {
         chainId: 296,
         urls: {
           apiURL: "https://testnet.hashio.io/api",
-          browserURL: "https://testnet.hashio.io",
+          browserURL: "https://hashscan.io/testnet",
         },
       },
     ],

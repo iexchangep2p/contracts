@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { ignition, ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 
 async function main() {
   const gasTanks: { [key: string]: string } = {
@@ -35,6 +35,22 @@ async function main() {
       "0x7FC7885B959040Ef1AAa869992EefCBe15BbFDFB",
       "0xA344177685bb29E42bbf10eD268aEC076282807D",
     ],
+    534351: [
+      "0xACBC1eC300bBea9A9FD0A661cD717d8519c5FCA5",
+      "0x28cB409154beb695D5E9ffA85dA8f1564Aa3cD76",
+    ],
+    44787: [
+      "0xa9cC3A357091ebeD23F475A0BbA140054E453887",
+      "0x88F6cE7417699F1E3470c35eFe0BE660b2897474",
+    ],
+    1301: [
+      "0xFB7E20739Fa2b8b4351c9F87a1C68b728E7aa614",
+      "0xEd64A15A6223588794A976d344990001a065F3f1",
+    ],
+    296: [
+      '0xFB7E20739Fa2b8b4351c9F87a1C68b728E7aa614',
+      '0xEd64A15A6223588794A976d344990001a065F3f1',
+    ],
   };
   const minStakeAmount = BigInt(5 * 1e18);
   const fiveMil = BigInt(minStakeAmount * BigInt(1e6));
@@ -45,8 +61,12 @@ async function main() {
     2810: "0x65C69f8c9a871F790812D380b6150C921CB5610B",
     4202: "0x7e973D307BcBBD488Af2661b04d71c9841e75765",
     84532: "0xf35582f788c1853c75Fb0b9D9286BaC41133134b",
+    534351: "0x3ED02478ecf2A46Dd95477270AefD016B7b99ed2",
+    44787: "0x0089326cF33fF85f9AA39e02F4557B454327A17F",
+    1301: "0xa9cC3A357091ebeD23F475A0BbA140054E453887",
+    296: "0xa9cC3A357091ebeD23F475A0BbA140054E453887"
   };
-  const chain = 4202;
+  const chain = Number((await ethers.provider.getNetwork()).chainId);
   const token1 = await ethers.getContractAt(
     "TokenCutter",
     testTokens[chain][0]
@@ -59,43 +79,41 @@ async function main() {
   const tm = tokenMulti[chain];
 
   for (const t of Object.keys(gasTanks)) {
-    const w = new ethers.Wallet(gasTanks[t], ethers.provider);
-
-    const tx = await token1.connect(w).approve(tm, oneTril);
-    console.log(`Just approved ${tx.hash} to ${t}`);
+    let tx = await token1.transfer(t, fiveMil);
+    console.log(`Just transfered token1 ${tx.hash} to ${t}`);
 
     await delay(5000);
 
-    const txt = await token2.connect(w).approve(tm, oneTril);
-    console.log(`Just approved ${txt.hash} to ${t}`);
+    tx = await token2.transfer(t, fiveMil);
+    console.log(`Just transfered token2 ${tx.hash} to ${t}`);
 
     await delay(5000);
   }
 
-  //   for (const t of Object.keys(gasTanks)) {
-  //     const tx = await token1.transfer(t, fiveMil);
-  //     console.log(`Just transfered ${tx.hash} to ${t}`);
+  for (const t of Object.keys(gasTanks)) {
+    const [s] = await ethers.getSigners();
+    const tx = await s.sendTransaction({
+      to: t,
+      value: ethers.parseEther("0.1"),
+    });
+    console.log(`Just transfered ${tx.hash} to ${t}`);
 
-  //     await delay(3000);
-  //   }
+    await delay(5000);
+  }
 
-  //   for (const t of Object.keys(gasTanks)) {
-  //     const tx = await token2.transfer(t, fiveMil);
-  //     console.log(`Just transfered ${tx.hash} to ${t}`);
+  for (const t of Object.keys(gasTanks)) {
+    const w = new ethers.Wallet(gasTanks[t], ethers.provider);
 
-  //     await delay(3000);
-  //   }
+    const tx = await token1.connect(w).approve(tm, oneTril);
+    console.log(`Just approved token1 ${tx.hash} to ${t}`);
 
-  //   for (const t of Object.keys(gasTanks)) {
-  //     const [s] = await ethers.getSigners();
-  //     const tx = await s.sendTransaction({
-  //       to: t,
-  //       value: ethers.parseEther("0.01"),
-  //     });
-  //     console.log(`Just transfered ${tx.hash} to ${t}`);
+    await delay(5000);
 
-  //     await delay(3000);
-  //   }
+    const txt = await token2.connect(w).approve(tm, oneTril);
+    console.log(`Just approved token2 ${txt.hash} to ${t}`);
+
+    await delay(5000);
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
