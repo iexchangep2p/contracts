@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
       bscTestnet: ETHERSCAN_KEY,
       opTestnet: ETHERSCAN_KEY,
       inkSepolia: "anything",
-      liskTestnet: "anything",
+      cod: "anything",
       hederaTestnet: "anything",
     },
     customChains: [

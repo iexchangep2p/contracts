@@ -46,7 +46,11 @@ contract OrderSig is IOrderSig {
             revert InvalidSigner();
         }
         if (HelpersLib.compareBytes(_merchantSig, HelpersLib.emptyBytes)) {
-            state = OrderState.pending;
+            if (msg.sender == _order.merchant) {
+                state = OrderState.accepted;
+            } else {
+                state = OrderState.pending;
+            }
         } else {
             address merchant = LibSig._signer(_orderHash, _merchantSig);
             if (_order.merchant != merchant) {

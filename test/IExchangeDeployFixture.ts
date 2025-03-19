@@ -32,6 +32,8 @@ export async function deployIExchange() {
   const orderFeeBasis = 100;
   const currency = ethers.toUtf8Bytes("ECO");
   const paymentMethod = ethers.toUtf8Bytes("ECOPAY");
+  const currency2 = ethers.toUtf8Bytes("GHS");
+  const paymentMethod2 = ethers.toUtf8Bytes("GHSPAY");
   const oneGrandNumber = 1000;
   const hardhatNetwork = await ethers.provider.getNetwork();
   const chainId = Number(hardhatNetwork.chainId);
@@ -92,6 +94,8 @@ export async function deployIExchange() {
     usdt,
     oneGrandNumber,
     chainId,
+    currency2,
+    paymentMethod2
   };
 }
 

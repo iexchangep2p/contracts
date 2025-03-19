@@ -34,6 +34,8 @@ describe("Create Order - OrderSig", function () {
       chainId,
       orderSigProxy,
       iExchangeP2P,
+      paymentMethod2,
+      currency2,
     } = await loadFixture(deployIExchange);
 
     const order = sameChainOrder(
@@ -81,6 +83,50 @@ describe("Create Order - OrderSig", function () {
     await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
 
     await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        kofiMerchant.address,
+        await orderSigProxy.getAddress(),
+        oneGrand
+      );
+
+    const order2 = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency2),
+      ethers.keccak256(paymentMethod2),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+
+    const sigchain2 = orderSigChain(order2);
+    const sigchainAddress2 = await orderSigProxy.getAddress();
+    const domain2 = iexDomain(sigchain2, sigchainAddress2);
+
+    const sigchainDomainHash2 = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash2);
+    const traderSig2 = await signOrder(amaTrader, order2, domain2);
+
+    const traderAddress2 = ethers.verifyTypedData(
+      domain2,
+      encodedCreateOrder().types,
+      order2,
+      traderSig2
+    );
+    expect(amaTrader.address).to.equal(traderAddress2);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress2, oneGrand);
+
+    await expect(
+      (orderSigProxy.connect(kofiMerchant) as any).createOrder(
+        order2,
+        traderSig2,
+        "0x"
+      )
+    )
       .to.emit(usdt, "Transfer")
       .withArgs(
         kofiMerchant.address,
@@ -298,54 +344,6 @@ describe("Create Order - OrderSig", function () {
         invalidChainIdMerchantSig
       )
     ).to.be.revertedWithCustomError(orderSigProxy, "InvalidChainId");
-
-    //revert for unsupported currency
-    const unsupportedCurrencyOrder = {
-      ...order,
-      currency: ethers.keccak256(ethers.toUtf8Bytes("USD")),
-    };
-    const unsupportedCurrencyTraderSig = await signOrder(
-      amaTrader,
-      unsupportedCurrencyOrder,
-      domain
-    );
-    const unsupportedCurrencyMerchantSig = await signOrder(
-      kofiMerchant,
-      unsupportedCurrencyOrder,
-      domain
-    );
-
-    await expect(
-      orderSigProxy.createOrder(
-        unsupportedCurrencyOrder,
-        unsupportedCurrencyTraderSig,
-        unsupportedCurrencyMerchantSig
-      )
-    ).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedCurrency");
-
-    //revert for unsupported paymentMethod
-    const unsupportedPaymentMethodOrder = {
-      ...order,
-      paymentMethod: ethers.keccak256(ethers.toUtf8Bytes("Chase Bank")),
-    };
-    const unsupportedPaymentMethodTraderSig = await signOrder(
-      amaTrader,
-      unsupportedPaymentMethodOrder,
-      domain
-    );
-    const unsupportedPaymentMethodMerchantSig = await signOrder(
-      kofiMerchant,
-      unsupportedPaymentMethodOrder,
-      domain
-    );
-
-    await expect(
-      orderSigProxy.createOrder(
-        unsupportedPaymentMethodOrder,
-        unsupportedPaymentMethodTraderSig,
-        unsupportedPaymentMethodMerchantSig
-      )
-    ).to.be.revertedWithCustomError(orderSigProxy, "UnsupportedPaymentMethod");
 
     //revert for invalid trade token
     const invalidTradeTokenOrder = {

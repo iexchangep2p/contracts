@@ -40,12 +40,6 @@ library LibOrder {
         if (o.orders[_orderHash].createdAt > 0) {
             revert IOrder.OrderExists();
         }
-        if (!o.currency[_order.currency].active) {
-            revert IOrder.UnsupportedCurrency();
-        }
-        if (!o.paymentMethod[_order.paymentMethod].active) {
-            revert IOrder.UnsupportedPaymentMethod();
-        }
         if (!o.tradeToken[_order.token].active) {
             revert IOrder.InvalidTradeToken();
         }
@@ -59,15 +53,6 @@ library LibOrder {
         if (merchant.concurrentOrders >= o.maxConcurrentOrders) {
             revert IMerchant.MerchantConcurrencyReached();
         }
-        // if (o.stakeToken[merchant.stakeToken.token].token == address(0)) {
-        //     revert IMerchant.InvalidStakeToken();
-        // }
-        // if (
-        //     merchant.stakeToken.stakeAmount <
-        //     o.stakeToken[merchant.stakeToken.token].stakeAmount
-        // ) {
-        //     revert IMerchant.InvalidMerchantStake();
-        // }
         o.orders[_orderHash] = IOrder.Order({
             trader: _order.trader,
             merchant: _order.merchant,
@@ -175,9 +160,7 @@ library LibOrder {
             revert IOrder.OrderPaidRequired();
         }
         o.orders[_orderHash].orderState = OrderState.released;
-        LibMerchant
-            ._get(o.orders[_orderHash].merchant)
-            .concurrentOrders -= 1;
+        LibMerchant._get(o.orders[_orderHash].merchant).concurrentOrders -= 1;
         uint256 fee = _computeOrderFee(
             o.tradeToken[o.orders[_orderHash].token],
             o.orders[_orderHash].quantity
@@ -214,6 +197,18 @@ library LibOrder {
         if (o.orders[_orderHash].createdAt == 0) {
             revert IOrder.OrderDoesNotExists();
         }
+        if (o.orders[_orderHash].deadline > block.timestamp) {
+            _cancelBeforeDeadline(_orderHash, _caller);
+        } else {
+            _cancelOrderAfterDeadline(_orderHash);
+        }
+    }
+
+    function _cancelBeforeDeadline(
+        bytes32 _orderHash,
+        address _caller
+    ) internal {
+        OrderStore storage o = OrderStorage.load();
         if (o.orders[_orderHash].orderType == OrderType.buy) {
             if (o.orders[_orderHash].orderState != OrderState.accepted) {
                 revert IOrder.OrderAcceptedRequired();
@@ -243,12 +238,7 @@ library LibOrder {
 
     function _cancelOrderAfterDeadline(bytes32 _orderHash) internal {
         OrderStore storage o = OrderStorage.load();
-        if (o.orders[_orderHash].createdAt == 0) {
-            revert IOrder.OrderDoesNotExists();
-        }
-        if (o.orders[_orderHash].deadline > block.timestamp) {
-            revert IOrder.NotYetDeadline();
-        }
+
         if (
             o.orders[_orderHash].orderState != OrderState.pending &&
             o.orders[_orderHash].orderState != OrderState.accepted

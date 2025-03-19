@@ -64,12 +64,12 @@ async function main() {
     const tx = await token1.connect(w).approve(tm, oneTril);
     console.log(`Just approved ${tx.hash} to ${t}`);
 
-    await delay(3000);
+    await delay(5000);
 
     const txt = await token2.connect(w).approve(tm, oneTril);
     console.log(`Just approved ${txt.hash} to ${t}`);
 
-    await delay(3000);
+    await delay(5000);
   }
 
   //   for (const t of Object.keys(gasTanks)) {
