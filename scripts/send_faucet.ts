@@ -14,10 +14,6 @@ async function main() {
     "0x80f7d0135c37FFDBbE48999f016D0A9d747A7e24": process.env.T9!,
     "0x6b3899dcd4C2CeEbb0f2FE7E85e91f7AB9D333CD": process.env.T10!,
   };
-
-  const delay = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-
   const testTokens: { [key: number]: string[] } = {
     421614: [
       "0xEd64A15A6223588794A976d344990001a065F3f1",
@@ -48,13 +44,11 @@ async function main() {
       "0xEd64A15A6223588794A976d344990001a065F3f1",
     ],
     296: [
-      '0xFB7E20739Fa2b8b4351c9F87a1C68b728E7aa614',
-      '0xEd64A15A6223588794A976d344990001a065F3f1',
+      "0xFB7E20739Fa2b8b4351c9F87a1C68b728E7aa614",
+      "0xEd64A15A6223588794A976d344990001a065F3f1",
     ],
   };
-  const minStakeAmount = BigInt(5 * 1e18);
-  const fiveMil = BigInt(minStakeAmount * BigInt(1e6));
-  const oneTril = BigInt(minStakeAmount * BigInt(1e12));
+  const oneGrand = BigInt(1e21);
 
   const tokenMulti: { [key: number]: string } = {
     421614: "0x72e6102Ea4d2837C044D12423a6F2281aeBCD28B",
@@ -64,56 +58,27 @@ async function main() {
     534351: "0x3ED02478ecf2A46Dd95477270AefD016B7b99ed2",
     44787: "0x171B62C816798F825250d1f43eb5922b0cb9f9eF",
     1301: "0xa9cC3A357091ebeD23F475A0BbA140054E453887",
-    296: "0xa9cC3A357091ebeD23F475A0BbA140054E453887"
+    296: "0xa9cC3A357091ebeD23F475A0BbA140054E453887",
   };
   const chain = Number((await ethers.provider.getNetwork()).chainId);
-  const token1 = await ethers.getContractAt(
-    "TokenCutter",
-    testTokens[chain][0]
-  );
-  const token2 = await ethers.getContractAt(
-    "TokenCutter",
-    testTokens[chain][1]
+  const multiSend = await ethers.getContractAt(
+    "TokenMultiSend",
+    tokenMulti[chain]
   );
 
-  const tm = tokenMulti[chain];
+  const t = Object.keys(gasTanks)[0];
+  console.log(`dropping from ${t} with ${tokenMulti[chain]} on ${chain}`);
 
-  for (const t of Object.keys(gasTanks)) {
-    let tx = await token1.transfer(t, fiveMil);
-    console.log(`Just transfered token1 ${tx.hash} to ${t}`);
+  const w = new ethers.Wallet(gasTanks[t], ethers.provider);
 
-    await delay(5000);
-
-    tx = await token2.transfer(t, fiveMil);
-    console.log(`Just transfered token2 ${tx.hash} to ${t}`);
-
-    await delay(5000);
-  }
-
-  for (const t of Object.keys(gasTanks)) {
-    const [s] = await ethers.getSigners();
-    const tx = await s.sendTransaction({
-      to: t,
-      value: ethers.parseEther("0.1"),
-    });
-    console.log(`Just transfered ${tx.hash} to ${t}`);
-
-    await delay(5000);
-  }
-
-  for (const t of Object.keys(gasTanks)) {
-    const w = new ethers.Wallet(gasTanks[t], ethers.provider);
-
-    const tx = await token1.connect(w).approve(tm, oneTril);
-    console.log(`Just approved token1 ${tx.hash} to ${t}`);
-
-    await delay(5000);
-
-    const txt = await token2.connect(w).approve(tm, oneTril);
-    console.log(`Just approved token2 ${txt.hash} to ${t}`);
-
-    await delay(5000);
-  }
+  const tx = await multiSend
+    .connect(w)
+    .send(
+      testTokens[chain],
+      oneGrand,
+      "0x3950355B679D6d115Bb680C620a3B7b32f540001"
+    );
+  console.log(`done dropping from ${t} ${tx.hash}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
