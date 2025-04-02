@@ -38,19 +38,7 @@ library LibTransfer {
         address _token,
         uint256 _chainId
     ) internal returns (bool) {
-        TradeToken storage t = OrderStorage.load().tradeToken[_token];
-        ICrossChainSender handler = ICrossChainSender(t.crossChainSender);
-        (bool success, bytes memory result) = address(handler).delegatecall(
-            abi.encodeWithSelector(
-                ICrossChainSender.supportsChain.selector,
-                _token,
-                _chainId
-            )
-        );
-        if (!success) {
-            revert DelegateCallFailed("LibTransfer._supportsChain");
-        }
-        return abi.decode(result, (bool));
+        return block.chainid == _chainId;
     }
 
     function _bridgeSend(

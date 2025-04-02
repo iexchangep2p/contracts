@@ -1,10 +1,8 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { ethers, ignition } from "hardhat";
+import { ethers } from "hardhat";
 import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
-  createOrderMethodTypedDataHash,
   createOrderTypedDataHash,
   encodedCreateOrder,
   iexDomain,

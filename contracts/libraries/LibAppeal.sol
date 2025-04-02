@@ -44,6 +44,8 @@ library LibAppeal {
         );
     }
 
+    function _cancel(bytes32 _orderHash, address _caller) internal {}
+
     function _settle(
         bytes32 _orderHash,
         IAppeal.AppealDecision _appealDecision,

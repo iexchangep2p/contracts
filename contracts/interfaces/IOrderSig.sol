@@ -10,7 +10,9 @@ abstract contract IOrderSig {
         pay,
         release,
         cancel,
-        appeal
+        appeal,
+        cancelAppeal,
+        settleAppeal
     }
 
     struct OrderMethodPayload {
@@ -48,6 +50,16 @@ abstract contract IOrderSig {
     ) external virtual;
 
     function appealOrder(
+        OrderMethodPayload calldata _method,
+        bytes calldata _sig
+    ) external virtual;
+
+    function cancelAppeal(
+        OrderMethodPayload calldata _method,
+        bytes calldata _sig
+    ) external virtual;
+
+    function settleAppeal(
         OrderMethodPayload calldata _method,
         bytes calldata _sig
     ) external virtual;

@@ -1,24 +1,17 @@
-import { CreateOrder } from "./../client/types";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { ethers, ignition } from "hardhat";
+import { ethers } from "hardhat";
 import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
-  createOrderMethodTypedDataHash,
   createOrderTypedDataHash,
   encodedCreateOrder,
   iexDomain,
   iexDomainHash,
-  makeOrderMethod,
-  OrderMethod,
-  OrderMethodPayload,
   orderSigChain,
   OrderState,
   OrderType,
   sameChainOrder,
   signOrder,
-  signOrderMethod,
 } from "../client";
 
 describe("Create Order - OrderSig", function () {
@@ -55,8 +48,6 @@ describe("Create Order - OrderSig", function () {
     const domain = iexDomain(sigchain, sigchainAddress);
 
     const domainHash = iexDomainHash(domain);
-
-    const orderHash = createOrderTypedDataHash(order, domain);
 
     const sigchainDomainHash = await iExchangeP2P.domainSeparator();
     expect(domainHash).to.equal(sigchainDomainHash);
@@ -147,7 +138,6 @@ describe("Create Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
@@ -252,7 +242,6 @@ describe("Create Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -273,8 +262,6 @@ describe("Create Order - OrderSig", function () {
     const domain = iexDomain(sigchain, sigchainAddress);
 
     const domainHash = iexDomainHash(domain);
-
-    const orderHash = createOrderTypedDataHash(order, domain);
 
     const sigchainDomainHash = await iExchangeP2P.domainSeparator();
     expect(domainHash).to.equal(sigchainDomainHash);

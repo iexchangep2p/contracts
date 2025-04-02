@@ -1,10 +1,9 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { ethers, ignition } from "hardhat";
+import { ethers } from "hardhat";
 import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
-  createOrderMethodTypedDataHash,
   createOrderTypedDataHash,
   encodedCreateOrder,
   iexDomain,
@@ -33,7 +32,6 @@ describe("Release Order - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      orderProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 

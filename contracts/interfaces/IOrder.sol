@@ -53,8 +53,6 @@ abstract contract IOrder {
     event OrderReleased(bytes32 orderHash, OrderState status);
     event OrderCancelled(bytes32 orderHash, OrderState status);
 
-    error UnsupportedCurrency();
-    error UnsupportedPaymentMethod();
     error InvalidOrderCreateState();
     error InvalidTradeToken();
     error InvalidDuration();

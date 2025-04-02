@@ -9,14 +9,4 @@ interface ICrossChainSender {
         uint256 _chainId
     ) external;
 
-    function supportsChain(
-        address _token,
-        uint256 _chainId
-    ) external returns (bool);
-
-    function addSupport(address _token, uint256[] calldata _chainIds) external;
-    function removeSupport(
-        address _token,
-        uint256[] calldata _chainIds
-    ) external;
 }

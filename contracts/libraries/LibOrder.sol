@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import "../libraries/LibData.sol";
-import "./LibMerchant.sol";
 import "./LibTransfer.sol";
 import "../globals/Errors.sol";
 
@@ -49,10 +48,6 @@ library LibOrder {
         ) {
             revert IOrder.InvalidDuration();
         }
-        IMerchant.Merchant storage merchant = LibMerchant._get(_order.merchant);
-        if (merchant.concurrentOrders >= o.maxConcurrentOrders) {
-            revert IMerchant.MerchantConcurrencyReached();
-        }
         o.orders[_orderHash] = IOrder.Order({
             trader: _order.trader,
             merchant: _order.merchant,
@@ -67,8 +62,6 @@ library LibOrder {
             deadline: block.timestamp + _order.duration,
             createdAt: block.timestamp
         });
-
-        merchant.concurrentOrders += 1;
 
         if (_order.orderType == OrderType.buy) {
             if (_state == OrderState.accepted) {
@@ -160,7 +153,6 @@ library LibOrder {
             revert IOrder.OrderPaidRequired();
         }
         o.orders[_orderHash].orderState = OrderState.released;
-        LibMerchant._get(o.orders[_orderHash].merchant).concurrentOrders -= 1;
         uint256 fee = _computeOrderFee(
             o.tradeToken[o.orders[_orderHash].token],
             o.orders[_orderHash].quantity

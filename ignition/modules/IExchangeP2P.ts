@@ -40,18 +40,11 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   const ev = m.contract("ExchangeView");
   const evC = [ev, FacetCutAction.Add, Object.values(evS)];
 
-  const amS = functionSelectors("AML");
-  const am = m.contract("AML");
-  const amC = [am, FacetCutAction.Add, Object.values(amS)];
-
-  const kyS = functionSelectors("KYC");
-  const ky = m.contract("KYC");
-  const kyC = [ky, FacetCutAction.Add, Object.values(kyS)];
 
   m.call(
     cutProxy,
     "diamondCut",
-    [[oC, aC, emC, evC, mC, amC, kyC, osC], cpiInit.contract, cpiInit.selector],
+    [[oC, aC, emC, evC, mC, osC], cpiInit.contract, cpiInit.selector],
     { id: "IExchangeP2PDiamondCut" }
   );
 
@@ -79,14 +72,6 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
     id: "IExchangeP2PExchangeView",
   });
 
-  const amlProxy = m.contractAt("AML", iExchangeP2P, {
-    id: "IExchangeP2PAML",
-  });
-
-  const kycProxy = m.contractAt("KYC", iExchangeP2P, {
-    id: "IExchangeP2PKYC",
-  });
-
   return {
     merchantProxy,
     orderProxy,
@@ -94,8 +79,6 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
     appealProxy,
     managerProxy,
     viewProxy,
-    amlProxy,
-    kycProxy,
   };
 });
 

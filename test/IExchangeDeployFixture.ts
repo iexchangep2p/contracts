@@ -12,8 +12,6 @@ export async function deployIExchange() {
     appealProxy,
     managerProxy,
     viewProxy,
-    amlProxy,
-    kycProxy,
     iExchangeP2P,
     cutProxy,
     acProxy,
@@ -59,8 +57,6 @@ export async function deployIExchange() {
   const dummySender = await DummySender.deploy();
 
   await managerProxy.addStakeToken(await ixToken.getAddress(), oneGrand);
-  await managerProxy.addPaymentMethod(paymentMethod, oneMil, oneMil);
-  await managerProxy.addCurrency(currency, oneMil, oneMil);
 
   await managerProxy.addTradeToken(
     await usdt.getAddress(),
@@ -81,8 +77,6 @@ export async function deployIExchange() {
     appealProxy,
     managerProxy,
     viewProxy,
-    amlProxy,
-    kycProxy,
     iExchangeP2P,
     cutProxy,
     acProxy,

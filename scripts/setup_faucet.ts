@@ -78,23 +78,23 @@ async function main() {
 
   const tm = tokenMulti[chain];
 
-  for (const t of Object.keys(gasTanks)) {
-    let tx = await token1.transfer(t, fiveMil);
-    console.log(`Just transfered token1 ${tx.hash} to ${t}`);
+  // for (const t of Object.keys(gasTanks)) {
+  //   let tx = await token1.transfer(t, fiveMil);
+  //   console.log(`Just transfered token1 ${tx.hash} to ${t}`);
 
-    await delay(5000);
+  //   await delay(5000);
 
-    tx = await token2.transfer(t, fiveMil);
-    console.log(`Just transfered token2 ${tx.hash} to ${t}`);
+  //   tx = await token2.transfer(t, fiveMil);
+  //   console.log(`Just transfered token2 ${tx.hash} to ${t}`);
 
-    await delay(5000);
-  }
+  //   await delay(5000);
+  // }
 
   for (const t of Object.keys(gasTanks)) {
     const [s] = await ethers.getSigners();
     const tx = await s.sendTransaction({
       to: t,
-      value: ethers.parseEther("0.1"),
+      value: ethers.parseEther("0.5"),
     });
     console.log(`Just transfered ${tx.hash} to ${t}`);
 

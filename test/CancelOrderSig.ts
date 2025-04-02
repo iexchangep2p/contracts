@@ -1,14 +1,10 @@
 import {
-  loadFixture,
-  setBalance,
-  time,
+  loadFixture
 } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { ethers, ignition } from "hardhat";
+import { ethers } from "hardhat";
 import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
-  createOrderMethodTypedDataHash,
   createOrderTypedDataHash,
   encodedCreateOrder,
   iexDomain,
@@ -21,7 +17,6 @@ import {
   OrderType,
   sameChainOrder,
   signOrder,
-  AppealDecision,
   signOrderMethod,
   PreparedOrderMethod,
 } from "../client";
@@ -31,7 +26,6 @@ describe("Cancel - OrderSig", function () {
     const {
       kofiMerchant,
       amaTrader,
-      yaaBrokie,
       oneGrand,
       usdt,
       currency,
@@ -39,7 +33,6 @@ describe("Cancel - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -129,7 +122,6 @@ describe("Cancel - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 
@@ -299,7 +291,6 @@ describe("Cancel - OrderSig", function () {
     const {
       kofiMerchant,
       amaTrader,
-      yaaBrokie,
       oneGrand,
       usdt,
       currency,
@@ -307,7 +298,6 @@ describe("Cancel - OrderSig", function () {
       oneGrandNumber,
       chainId,
       orderSigProxy,
-      viewProxy,
       iExchangeP2P,
     } = await loadFixture(deployIExchange);
 

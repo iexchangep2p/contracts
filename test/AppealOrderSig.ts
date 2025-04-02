@@ -1,13 +1,11 @@
 import {
-  loadFixture,
-  time,
+  loadFixture
 } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { ethers, ignition } from "hardhat";
+import { ethers } from "hardhat";
 import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
-  createOrderMethodTypedDataHash,
   createOrderTypedDataHash,
   encodedCreateOrder,
   iexDomain,
@@ -30,7 +28,6 @@ describe("Appeal Order - OrderSig", function () {
     const {
       kofiMerchant,
       amaTrader,
-      yaaBrokie,
       oneGrand,
       usdt,
       currency,
@@ -140,7 +137,7 @@ describe("Appeal Order - OrderSig", function () {
         anyValue
       );
     //console.log("Appeals: ", await viewProxy.appeals(orderHash));
-    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeals(
+    const [appealsHash] = await viewProxy.appeals(
       orderHash
     );
     expect(appealsHash).to.equal(orderHash);
