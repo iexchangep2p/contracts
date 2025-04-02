@@ -137,7 +137,7 @@ describe("Appeal Order - OrderSig", function () {
         anyValue
       );
     //console.log("Appeals: ", await viewProxy.appeals(orderHash));
-    const [appealsHash] = await viewProxy.appeals(
+    const [appealsHash] = await viewProxy.appeal(
       orderHash
     );
     expect(appealsHash).to.equal(orderHash);
@@ -337,7 +337,7 @@ describe("Appeal Order - OrderSig", function () {
         anyValue
       );
     //console.log("Appeals: ", await viewProxy.appeals(orderHash));
-    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeals(
+    const [appealsHash, caller, decision, createdAt] = await viewProxy.appeal(
       orderHash
     );
     expect(appealsHash).to.equal(orderHash);

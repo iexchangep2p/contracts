@@ -59,6 +59,7 @@ abstract contract IOrder {
     error InvalidQuantity();
     error OrderExists();
     error OrderDoesNotExists();
+    error AppealExists();
     error NotYetDeadline();
     error InvalidExpiry();
     error OrderExpired();
@@ -66,8 +67,11 @@ abstract contract IOrder {
     error OrderAcceptedRequired();
     error OrderPendingOrAcceptedRequired();
     error OrderPaidRequired();
+    error OrderAppealedRequired();
+    error InvalidAppealDecision();
     error MustBeMerchant();
     error MustBeTrader();
+    error MustBeAppealer();
     error MustBeMerchantOrTrader();
 
     function createOrder(CreateOrder calldata _order) external virtual;

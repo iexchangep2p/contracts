@@ -7,7 +7,6 @@ export async function deployIExchange() {
   const [owner, kofiMerchant, amaTrader, yaaBrokie] = await ethers.getSigners();
 
   const {
-    merchantProxy,
     orderProxy,
     appealProxy,
     managerProxy,
@@ -56,22 +55,16 @@ export async function deployIExchange() {
   const DummySender = await ethers.getContractFactory("DummySender");
   const dummySender = await DummySender.deploy();
 
-  await managerProxy.addStakeToken(await ixToken.getAddress(), oneGrand);
-
   await managerProxy.addTradeToken(
     await usdt.getAddress(),
-    oneMil,
-    oneMil,
     await dummySender.getAddress(),
-    orderFeeBasis,
-    oneGrand
+    orderFeeBasis
   );
   return {
     owner,
     kofiMerchant,
     amaTrader,
     yaaBrokie,
-    merchantProxy,
     orderProxy,
     orderSigProxy,
     appealProxy,
@@ -89,7 +82,7 @@ export async function deployIExchange() {
     oneGrandNumber,
     chainId,
     currency2,
-    paymentMethod2
+    paymentMethod2,
   };
 }
 

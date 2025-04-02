@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import "../libraries/LibData.sol";
 import "../globals/Errors.sol";
+import "../libraries/LibOrder.sol";
 
 library LibAppeal {
     function _get(
@@ -16,6 +17,9 @@ library LibAppeal {
         AppealStore storage a = AppealStorage.load();
         if (o.orders[_orderHash].createdAt == 0) {
             revert IOrder.OrderDoesNotExists();
+        }
+        if (a.appeals[_orderHash].createdAt > 0) {
+            revert IOrder.AppealExists();
         }
         if (o.orders[_orderHash].orderState != OrderState.paid) {
             revert IOrder.OrderPaidRequired();
@@ -47,13 +51,56 @@ library LibAppeal {
         );
     }
 
-    function _cancel(bytes32 _orderHash, address _caller) internal {}
+    function _cancel(bytes32 _orderHash, address _caller) internal {
+        OrderStore storage o = OrderStorage.load();
+        AppealStore storage a = AppealStorage.load();
+        if (o.orders[_orderHash].createdAt == 0) {
+            revert IOrder.OrderDoesNotExists();
+        }
+        if (o.orders[_orderHash].orderState != OrderState.appealed) {
+            revert IOrder.OrderAppealedRequired();
+        }
+        if (a.appeals[_orderHash].appealer != _caller) {
+            revert IOrder.MustBeAppealer();
+        }
+        o.orders[_orderHash].orderState = OrderState.paid;
+        a.appeals[_orderHash].cancelledAt = block.timestamp;
+        emit IAppeal.AppealCancelled(
+            a.appeals[_orderHash].orderHash,
+            a.appeals[_orderHash].appealer,
+            a.appeals[_orderHash].appealDecision,
+            o.orders[_orderHash].orderState,
+            a.appeals[_orderHash].cancelledAt
+        );
+    }
 
     function _settle(
         bytes32 _orderHash,
         IAppeal.AppealDecision _appealDecision,
         address _caller
     ) internal {
-        revert NotImplemented();
+        OrderStore storage o = OrderStorage.load();
+        AppealStore storage a = AppealStorage.load();
+        if (o.orders[_orderHash].createdAt == 0) {
+            revert IOrder.OrderDoesNotExists();
+        }
+        if (o.orders[_orderHash].orderState != OrderState.appealed) {
+            revert IOrder.OrderAppealedRequired();
+        }
+        if (_appealDecision == IAppeal.AppealDecision.unvoted) {
+            revert IOrder.InvalidAppealDecision();
+        }
+        a.appeals[_orderHash].settledAt = block.timestamp;
+        a.appeals[_orderHash].settler = _caller;
+        a.appeals[_orderHash].appealDecision = _appealDecision;
+        LibOrder._settle(_orderHash, _appealDecision);
+        emit IAppeal.AppealSettled(
+            a.appeals[_orderHash].orderHash,
+            a.appeals[_orderHash].appealer,
+            a.appeals[_orderHash].settler,
+            a.appeals[_orderHash].appealDecision,
+            o.orders[_orderHash].orderState,
+            a.appeals[_orderHash].settledAt
+        );
     }
 }

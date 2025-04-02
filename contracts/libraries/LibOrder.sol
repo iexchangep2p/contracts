@@ -257,6 +257,65 @@ library LibOrder {
         emit IOrder.OrderCancelled(_orderHash, o.orders[_orderHash].orderState);
     }
 
+    function _settle(
+        bytes32 _orderHash,
+        IAppeal.AppealDecision _appealDecision
+    ) internal {
+        OrderStore storage o = OrderStorage.load();
+        if (_appealDecision == IAppeal.AppealDecision.cancel) {
+            if (o.orders[_orderHash].orderType == OrderType.buy) {
+                if (o.orders[_orderHash].orderState == OrderState.accepted) {
+                    LibTransfer._send(
+                        o.orders[_orderHash].token,
+                        o.orders[_orderHash].quantity,
+                        o.orders[_orderHash].merchant
+                    );
+                }
+            }
+            if (o.orders[_orderHash].orderType == OrderType.sell) {
+                LibTransfer._send(
+                    o.orders[_orderHash].token,
+                    o.orders[_orderHash].quantity,
+                    o.orders[_orderHash].trader
+                );
+            }
+            o.orders[_orderHash].orderState = OrderState.cancelled;
+            emit IOrder.OrderCancelled(
+                _orderHash,
+                o.orders[_orderHash].orderState
+            );
+        }
+        if (_appealDecision == IAppeal.AppealDecision.release) {
+            o.orders[_orderHash].orderState = OrderState.released;
+            uint256 fee = _computeOrderFee(
+                o.tradeToken[o.orders[_orderHash].token],
+                o.orders[_orderHash].quantity
+            );
+            uint256 remaining = o.orders[_orderHash].quantity - fee;
+            o.tradeToken[o.orders[_orderHash].token].collectedFees += fee;
+            if (o.orders[_orderHash].orderType == OrderType.buy) {
+                LibTransfer._crossChainSend(
+                    o.orders[_orderHash].token,
+                    remaining,
+                    o.orders[_orderHash].trader,
+                    o.orders[_orderHash].traderChain
+                );
+            }
+            if (o.orders[_orderHash].orderType == OrderType.sell) {
+                LibTransfer._crossChainSend(
+                    o.orders[_orderHash].token,
+                    remaining,
+                    o.orders[_orderHash].merchant,
+                    o.orders[_orderHash].merchantChain
+                );
+            }
+            emit IOrder.OrderReleased(
+                _orderHash,
+                o.orders[_orderHash].orderState
+            );
+        }
+    }
+
     function _computeOrderFee(
         TradeToken memory _token,
         uint256 _amount

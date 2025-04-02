@@ -11,7 +11,7 @@ contract Appeal is IAppeal, IExchangeRoles {
     function settleAppeal(
         bytes32 _orderHash,
         AppealDecision _appealDecision
-    ) external virtual override {
+    ) external virtual override onlySettler {
         LibAppeal._settle(_orderHash, _appealDecision, msg.sender);
     }
 
