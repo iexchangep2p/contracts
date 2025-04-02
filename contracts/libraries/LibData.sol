@@ -6,7 +6,6 @@ import "../globals/Types.sol";
 
 struct OrderStore {
     mapping(address => TradeToken) tradeToken; // currency bytes -> TradeToken
-    mapping(address => IExchange.Merchant) merchant; // merchant address -> Merchant
     mapping(bytes32 => IExchange.Order) orders;
     uint256 minPaymentTimeLimit; // in minutes
     uint256 maxPaymentTimeLimit; // in minutes

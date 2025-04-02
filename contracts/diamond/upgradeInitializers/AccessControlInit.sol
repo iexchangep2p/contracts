@@ -9,8 +9,6 @@ contract AccessControlInit is AccessControlInternal, IExchangeRoles {
     function init() external {
         _grantRole(AccessControlStorage.DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(IEXCHANGE_MANAGER, msg.sender);
-        _grantRole(AML_PROVIDER, msg.sender);
-        _grantRole(KYC_PROVIDER, msg.sender);
         _grantRole(SETTLER, msg.sender);
     }
 }

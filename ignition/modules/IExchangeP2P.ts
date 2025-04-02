@@ -16,10 +16,6 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   const cpi = m.contract("IExchangeP2PInit");
   const cpiInit = { contract: cpi, selector: cpiS[INIT_SIG] };
 
-  const mS = functionSelectors("Merchant");
-  const mt = m.contract("Merchant");
-  const mC = [mt, FacetCutAction.Add, Object.values(mS)];
-
   const oS = functionSelectors("Order");
   const o = m.contract("Order");
   const oC = [o, FacetCutAction.Add, Object.values(oS)];
@@ -44,13 +40,9 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   m.call(
     cutProxy,
     "diamondCut",
-    [[oC, aC, emC, evC, mC, osC], cpiInit.contract, cpiInit.selector],
+    [[oC, aC, emC, evC, osC], cpiInit.contract, cpiInit.selector],
     { id: "IExchangeP2PDiamondCut" }
   );
-
-  const merchantProxy = m.contractAt("Merchant", iExchangeP2P, {
-    id: "IExchangeP2PMerchant",
-  });
 
   const orderProxy = m.contractAt("Order", iExchangeP2P, {
     id: "IExchangeP2POrder",
@@ -73,7 +65,6 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   });
 
   return {
-    merchantProxy,
     orderProxy,
     orderSigProxy,
     appealProxy,

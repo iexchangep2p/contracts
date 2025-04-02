@@ -51,10 +51,6 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
   const cpi = m.contract("IExchangeP2PInit");
   const cpiInit = { contract: cpi, selector: cpiS[INIT_SIG] };
 
-  const mS = functionSelectors("Merchant");
-  const mt = m.contract("Merchant");
-  const mC = [mt, FacetCutAction.Add, Object.values(mS)];
-
   const odS = functionSelectors("Order");
   const od = m.contract("Order");
   const odC = [od, FacetCutAction.Add, Object.values(odS)];
@@ -79,16 +75,12 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
     cutProxy,
     "diamondCut",
     [
-      [odC, aC, emC, evC, mC, osC],
+      [odC, aC, emC, evC, osC],
       cpiInit.contract,
       cpiInit.selector,
     ],
     { id: "IExchangeP2PDiamondCut" }
   );
-
-  const merchantProxy = m.contractAt("Merchant", iExchangeP2P, {
-    id: "IExchangeP2PMerchant",
-  });
 
   const orderProxy = m.contractAt("Order", iExchangeP2P, {
     id: "IExchangeP2POrder",
@@ -111,7 +103,6 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
   });
 
   return {
-    merchantProxy,
     orderProxy,
     orderSigProxy,
     appealProxy,

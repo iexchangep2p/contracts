@@ -58,9 +58,4 @@ abstract contract IOrderSig {
         OrderMethodPayload calldata _method,
         bytes calldata _sig
     ) external virtual;
-
-    function settleAppeal(
-        OrderMethodPayload calldata _method,
-        bytes calldata _sig
-    ) external virtual;
 }

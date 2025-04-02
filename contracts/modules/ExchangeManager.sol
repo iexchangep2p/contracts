@@ -70,7 +70,7 @@ contract ExchangeManager is IExchangeManager, IExchangeRoles, Helpers {
         address _token
     ) external virtual override onlyIExchangeManager {
         OrderStore storage o = OrderStorage.load();
-        if (o.tradeToken[_token].token == _token) {
+        if (!o.tradeToken[_token].active) {
             revert TradeTokenDoesNotExists();
         }
         delete o.tradeToken[_token];

@@ -7,13 +7,11 @@ import "./IOrder.sol";
 import "./IOrderSig.sol";
 import "./IAppeal.sol";
 
-import "./IMerchant.sol";
 
 abstract contract IExchange is
     IOrder,
     IOrderSig,
     IAppeal,
-    IMerchant,
     IExchangeView,
     IExchangeManager
 {}

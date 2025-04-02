@@ -32,7 +32,10 @@ library LibAppeal {
             orderHash: _orderHash,
             appealer: _caller,
             appealDecision: IAppeal.AppealDecision.unvoted,
-            createdAt: block.timestamp
+            createdAt: block.timestamp,
+            cancelledAt: 0,
+            settler: address(0),
+            settledAt: 0
         });
 
         emit IAppeal.OrderAppealed(
