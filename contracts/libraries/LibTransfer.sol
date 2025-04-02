@@ -35,10 +35,10 @@ library LibTransfer {
     }
 
     function _supportsChain(
-        address _token,
-        uint256 _chainId
-    ) internal returns (bool) {
-        return block.chainid == _chainId;
+        address /*_token*/,
+        uint256 /*_chainId*/
+    ) internal pure returns (bool) {
+        return false;
     }
 
     function _bridgeSend(
