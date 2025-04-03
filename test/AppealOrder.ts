@@ -232,6 +232,7 @@ describe("Appeal Order - Appeal", function () {
     await expect(
       (appealProxy.connect(yaaBrokie) as any).appealOrder(orderHash)
     ).to.be.revertedWithCustomError(appealProxy, "MustBeMerchantOrTrader");
+
     //Passing appeal order
     await expect(
       (appealProxy.connect(kofiMerchant) as any).appealOrder(orderHash)
@@ -504,7 +505,7 @@ describe("Appeal Order - Appeal", function () {
       );
   });
 
-  it("Should [Cancel Appeal]", async function () {
+  it("Should [Cancel Appeal, Reverts for Cancel Appeal]", async function () {
     const {
       owner,
       kofiMerchant,
@@ -594,6 +595,11 @@ describe("Appeal Order - Appeal", function () {
       .to.emit(orderSigProxy, "OrderPaid")
       .withArgs(orderHash, OrderState.paid);
 
+    //revert for OrderAppealedRequired
+    await expect(
+      (appealProxy.connect(kofiMerchant) as any).cancelAppeal(orderHash)
+    ).to.be.revertedWithCustomError(appealProxy, "OrderAppealedRequired");
+
     //Passing appeal order
     await expect(
       (appealProxy.connect(kofiMerchant) as any).appealOrder(orderHash)
@@ -608,8 +614,20 @@ describe("Appeal Order - Appeal", function () {
       );
     const [appealsHash] = await viewProxy.appeal(orderHash);
     expect(appealsHash).to.equal(orderHash);
+    //revert for OrderDoesNotExists
+    const nonExistentOrderHash = ethers.ZeroHash;
+    await expect(
+      (appealProxy.connect(kofiMerchant) as any).cancelAppeal(
+        nonExistentOrderHash
+      )
+    ).to.be.revertedWithCustomError(appealProxy, "OrderDoesNotExists");
 
-    //cancelAppeal
+    //revert for MustBeAppealer
+    await expect(
+      (appealProxy.connect(amaTrader) as any).cancelAppeal(orderHash)
+    ).to.be.revertedWithCustomError(appealProxy, "MustBeAppealer");
+
+    //Passing cancelAppeal
     await expect(
       (appealProxy.connect(kofiMerchant) as any).cancelAppeal(orderHash)
     )
