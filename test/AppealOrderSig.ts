@@ -441,6 +441,25 @@ describe("Appeal Order - OrderSig", function () {
       domain
     );
 
+    //revert for OrderAppealedRequired
+    const appealedMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.accept,
+      expiry,
+    };
+    const appealedOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      appealedMethodPayload
+    );
+    const appealedOrderSig = await signOrderMethod(
+      kofiMerchant,
+      appealedOrderMethod,
+      domain
+    );
+
+    await expect(
+      orderSigProxy.cancelAppeal(appealedOrderMethod, appealedOrderSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "OrderAppealedRequired");
+
     //Passing appeal order
     await expect(orderSigProxy.appealOrder(appealOrderMethod, appealOrderSig))
       .to.emit(orderSigProxy, "OrderAppealed")
@@ -453,6 +472,66 @@ describe("Appeal Order - OrderSig", function () {
       );
     const [appealsHash, , ,] = await viewProxy.appeal(orderHash);
     expect(appealsHash).to.equal(orderHash);
+
+    //Reverts for cancelAppeal
+    //revert for non-existent order
+    const nonExistentOrder = { ...order, trader: yaaBrokie.address };
+    const nonExistentOrderHash = createOrderTypedDataHash(
+      nonExistentOrder,
+      domain
+    );
+    const nonExistentMethodPayload: OrderMethodPayload = {
+      orderHash: nonExistentOrderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+    const nonExistentOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      nonExistentMethodPayload
+    );
+    const nonExistentOrderSig = await signOrderMethod(
+      kofiMerchant,
+      nonExistentOrderMethod,
+      domain
+    );
+    await expect(
+      orderSigProxy.cancelAppeal(nonExistentOrderMethod, nonExistentOrderSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "OrderDoesNotExists");
+
+    //revert for MustBeAppealer
+    const notAppealerMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+    const notAppealerOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      notAppealerMethodPayload
+    );
+    const notAppealerOrderSig = await signOrderMethod(
+      yaaBrokie,
+      notAppealerOrderMethod,
+      domain
+    );
+    await expect(
+      orderSigProxy.cancelAppeal(notAppealerOrderMethod, notAppealerOrderSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "MustBeAppealer");
+
+    //revert for MustBeAppealer
+    const invalidAppealerMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.pay,
+      expiry,
+    };
+    const invalidAppealerOrderMethod: PreparedOrderMethod = makeOrderMethod(
+      invalidAppealerMethodPayload
+    );
+    const invalidAppealerOrderSig = await signOrderMethod(
+      yaaBrokie,
+      invalidAppealerOrderMethod,
+      domain
+    );
+    await expect(
+      orderSigProxy.cancelAppeal(invalidAppealerOrderMethod, invalidAppealerOrderSig)
+    ).to.be.revertedWithCustomError(orderSigProxy, "MustBeAppealer");
 
     //passing cancelAppeal
     const cancelMethodPayload: OrderMethodPayload = {
@@ -467,15 +546,15 @@ describe("Appeal Order - OrderSig", function () {
       cancelOrderMethod,
       domain
     );
-    await expect(
-      orderSigProxy.cancelAppeal(cancelOrderMethod, cancelOrderSig)
-    ).to.emit(orderSigProxy, "AppealCancelled").withArgs(
-      orderHash,
-      kofiMerchant.address,
-      AppealDecision.unvoted,
-      OrderState.paid,
-      anyValue
-    );
+    await expect(orderSigProxy.cancelAppeal(cancelOrderMethod, cancelOrderSig))
+      .to.emit(orderSigProxy, "AppealCancelled")
+      .withArgs(
+        orderHash,
+        kofiMerchant.address,
+        AppealDecision.unvoted,
+        OrderState.paid,
+        anyValue
+      );
     const [cancelledAppealsHash, cancelledCaller, cancelledDecision] =
       await viewProxy.appeal(orderHash);
     expect(cancelledAppealsHash).to.equal(orderHash);
