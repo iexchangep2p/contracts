@@ -46,6 +46,8 @@ export enum OrderMethod {
   release,
   cancel,
   appeal,
+  cancelAppeal,
+  settleAppeal
 }
 
 export type OrderMethodPayload = {

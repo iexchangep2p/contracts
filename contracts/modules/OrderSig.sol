@@ -135,7 +135,7 @@ contract OrderSig is IOrderSig {
         override
         sigNotExpired(_method.expiry)
         validSig(_sig)
-        onlyOrderMethod(_method.method, OrderMethod.pay)
+        onlyOrderMethod(_method.method, OrderMethod.appeal)
     {
         bytes32 _orderMethodHash = LibSig._hashOrderMethodEIP712(_method);
         address caller = LibSig._signer(_orderMethodHash, _sig);
@@ -145,7 +145,14 @@ contract OrderSig is IOrderSig {
     function cancelAppeal(
         OrderMethodPayload calldata _method,
         bytes calldata _sig
-    ) external virtual override {
+    )
+        external
+        virtual
+        override
+        sigNotExpired(_method.expiry)
+        validSig(_sig)
+        onlyOrderMethod(_method.method, OrderMethod.cancelAppeal)
+    {
         bytes32 _orderMethodHash = LibSig._hashOrderMethodEIP712(_method);
         address caller = LibSig._signer(_orderMethodHash, _sig);
         LibAppeal._cancel(_method.orderHash, caller);
