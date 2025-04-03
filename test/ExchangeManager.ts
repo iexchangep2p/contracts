@@ -216,7 +216,7 @@ describe("Exchange Manager", function () {
     ).to.be.revertedWith(accessControlError);
 
     //revert for InvalidMinPaymentTimeLimit
-    //set minPaymentTimeLimit to 0
+    //set minPaymentTimeLimit to 15
     await expect(managerProxy.setMinPaymentTimeLimit(15n))
       .to.emit(managerProxy, "MinPaymentTimeLimitSet")
       .withArgs(owner, 15n);
