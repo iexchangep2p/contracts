@@ -1,0 +1,23 @@
+{
+  "IExchangeDiamondModule#AccessControlFacet": "0xBA3494C430F027610CFA3f766f4E95728810c926",
+  "IExchangeDiamondModule#AccessControlInit": "0xEf9d0b66cC4197a0dD0b519dB607F9ca38DB8A48",
+  "IExchangeDiamondModule#DiamondCutFacet": "0x56d3719CcB48124d7CeE71F70B3e0bAa860E7FB6",
+  "IExchangeDiamondModule#DiamondInit": "0x011A7dd596A32DD7cD133DB78f0143E8A4C0E05A",
+  "IExchangeDiamondModule#DiamondLoupeFacet": "0x6cB71488797f7a9bB285D6Ff45cA8D32cdbcC8Dd",
+  "IExchangeDiamondModule#IExchangeP2P": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeDiamondModule#OwnershipFacet": "0x7D4E978f5Fd486d168a5e2c20A7Fabd2fBB5a53B",
+  "IExchangeP2PModule#Appeal": "0xeE9163A86420463294421A3F352D92d989812411",
+  "IExchangeP2PModule#ExchangeManager": "0xCDF8083d6C910b7151944f16cd8E5fE09CbB0176",
+  "IExchangeP2PModule#ExchangeView": "0xc206512b012Fa5B1f21dcb38DBb9784b902BB30c",
+  "IExchangeP2PModule#IExchangeP2PInit": "0x7d4052852fb49889a7EaaC4f2EF143A08c42d3d8",
+  "IExchangeP2PModule#Order": "0x5A497fA0c211B9dfB5Bf2dECCEcAa3F7000423f3",
+  "IExchangeP2PModule#OrderSig": "0x12489C3e0B230Ca62F83f681AD2F09C314806Ee6",
+  "IExchangeDiamondModule#IExchangeP2PAccessControl": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeDiamondModule#IExchangeP2PDiamondCutFacet": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeP2PModule#IExchangeP2PAppeal": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeP2PModule#IExchangeP2PExchangeManager": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeP2PModule#IExchangeP2PExchangeView": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeP2PModule#IExchangeP2POrder": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "IExchangeP2PModule#IExchangeP2POrderSig": "0x3e29F361a17BA79d380fe4e315e1E44e9B1f22e2",
+  "DummySenderModule#DummySender": "0x1279E751B0F57B6cfAe4E76857945F88DAF8c8FF"
+}

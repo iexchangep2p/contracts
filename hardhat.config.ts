@@ -1,7 +1,7 @@
 import { HardhatUserConfig, vars } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import { testChains, testKeys, testNetworks } from "./configs/testnets";
-
+import { mainChains, mainKeys, mainNetworks } from "./configs/mainnets";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -16,15 +16,15 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    ...testNetworks
+    ...testNetworks,
+    ...mainNetworks,
   },
   etherscan: {
     apiKey: {
-      ...testKeys
+      ...testKeys,
+      ...mainKeys,
     },
-    customChains: [
-      ...testChains
-    ],
+    customChains: [...testChains, ...mainChains],
   },
   mocha: {
     timeout: 100000000,

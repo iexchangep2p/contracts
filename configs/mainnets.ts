@@ -1,6 +1,6 @@
 import { HardhatUserConfig, vars } from "hardhat/config";
 const DEPLOY_KEY_MAIN = vars.get("DEPLOY_KEY_MAIN");
-export const testNetworks: any = {
+export const mainNetworks: any = {
   base: {
     url: "https://mainnet.base.org",
     accounts: [DEPLOY_KEY_MAIN],
@@ -11,10 +11,10 @@ export const testNetworks: any = {
   }
 };
 
-export const testChains: any[] = [
+export const mainChains: any[] = [
   {
     network: "arbitrum",
-    chainId: 421614,
+    chainId: 42161,
     urls: {
       apiURL: "https://arbitrum.blockscout.com/api",
       browserURL: "https://arbitrum.blockscout.com",
@@ -30,7 +30,7 @@ export const testChains: any[] = [
   }
 ];
 
-export const testKeys = {
+export const mainKeys = {
   base: "anything",
   arbitrum: "anything",
 };
