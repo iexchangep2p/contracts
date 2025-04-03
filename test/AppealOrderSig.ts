@@ -1,6 +1,4 @@
-import {
-  loadFixture
-} from "@nomicfoundation/hardhat-toolbox/network-helpers";
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { ethers } from "hardhat";
 import { expect } from "chai";
@@ -137,9 +135,7 @@ describe("Appeal Order - OrderSig", function () {
         anyValue
       );
     //console.log("Appeals: ", await viewProxy.appeals(orderHash));
-    const [appealsHash] = await viewProxy.appeal(
-      orderHash
-    );
+    const [appealsHash] = await viewProxy.appeal(orderHash);
     expect(appealsHash).to.equal(orderHash);
   });
   it("Should[Reverts for Appeal]", async function () {
@@ -341,5 +337,149 @@ describe("Appeal Order - OrderSig", function () {
       orderHash
     );
     expect(appealsHash).to.equal(orderHash);
+  });
+  it("Should[Cancel for Appeal, Reverts for Cancel Appeal]", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      yaaBrokie,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      viewProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    //createOrder → acceptOrder → payOrder → appealOrder - cancelAppeal
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
+
+    await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        kofiMerchant.address,
+        await orderSigProxy.getAddress(),
+        oneGrand
+      );
+
+    const payMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.pay,
+      expiry,
+    };
+
+    const payOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(payMethodPayload);
+    const payOrderSig = await signOrderMethod(
+      amaTrader,
+      payOrderMethod,
+      domain
+    );
+
+    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
+      .to.emit(orderSigProxy, "OrderPaid")
+      .withArgs(orderHash, OrderState.paid);
+
+    const appealMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.pay,
+      expiry,
+    };
+
+    const appealOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(appealMethodPayload);
+    const appealOrderSig = await signOrderMethod(
+      kofiMerchant,
+      appealOrderMethod,
+      domain
+    );
+
+    //Passing appeal order
+    await expect(orderSigProxy.appealOrder(appealOrderMethod, appealOrderSig))
+      .to.emit(orderSigProxy, "OrderAppealed")
+      .withArgs(
+        orderHash,
+        kofiMerchant.address,
+        AppealDecision.unvoted,
+        OrderState.appealed,
+        anyValue
+      );
+    const [appealsHash, , ,] = await viewProxy.appeal(orderHash);
+    expect(appealsHash).to.equal(orderHash);
+
+    //passing cancelAppeal
+    const cancelMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.cancel,
+      expiry,
+    };
+    const cancelOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(cancelMethodPayload);
+    const cancelOrderSig = await signOrderMethod(
+      kofiMerchant,
+      cancelOrderMethod,
+      domain
+    );
+    await expect(
+      orderSigProxy.cancelAppeal(cancelOrderMethod, cancelOrderSig)
+    ).to.emit(orderSigProxy, "AppealCancelled").withArgs(
+      orderHash,
+      kofiMerchant.address,
+      AppealDecision.unvoted,
+      OrderState.paid,
+      anyValue
+    );
+    const [cancelledAppealsHash, cancelledCaller, cancelledDecision] =
+      await viewProxy.appeal(orderHash);
+    expect(cancelledAppealsHash).to.equal(orderHash);
+    expect(cancelledDecision).to.equal(AppealDecision.unvoted);
+    expect(cancelledCaller).to.equal(kofiMerchant.address);
   });
 });
