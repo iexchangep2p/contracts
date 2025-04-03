@@ -126,6 +126,132 @@ describe("Appeal Order - Appeal", function () {
     const [appealsHash] = await viewProxy.appeal(orderHash);
     expect(appealsHash).to.equal(orderHash);
   });
+  it("Should [Reverts for Appeal]", async function () {
+    const {
+      kofiMerchant,
+      amaTrader,
+      yaaBrokie,
+      oneGrand,
+      usdt,
+      currency,
+      paymentMethod,
+      oneGrandNumber,
+      chainId,
+      orderSigProxy,
+      appealProxy,
+      viewProxy,
+      iExchangeP2P,
+    } = await loadFixture(deployIExchange);
+
+    //createOrder → acceptOrder → payOrder → appealOrder
+
+    const order = sameChainOrder(
+      amaTrader.address,
+      kofiMerchant.address,
+      await usdt.getAddress(),
+      ethers.keccak256(currency),
+      ethers.keccak256(paymentMethod),
+      oneGrandNumber,
+      OrderType.buy,
+      chainId,
+      chainId
+    );
+    const expiry = Math.floor(Date.now() / 1000) + 60 * 15;
+
+    const sigchain = orderSigChain(order);
+    const sigchainAddress = await orderSigProxy.getAddress();
+    const domain = iexDomain(sigchain, sigchainAddress);
+
+    const domainHash = iexDomainHash(domain);
+
+    const orderHash = createOrderTypedDataHash(order, domain);
+
+    const sigchainDomainHash = await iExchangeP2P.domainSeparator();
+    expect(domainHash).to.equal(sigchainDomainHash);
+    const traderSig = await signOrder(amaTrader, order, domain);
+    const merchantSig = await signOrder(kofiMerchant, order, domain);
+
+    const traderAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      traderSig
+    );
+    expect(amaTrader.address).to.equal(traderAddress);
+
+    const merchantAddress = ethers.verifyTypedData(
+      domain,
+      encodedCreateOrder().types,
+      order,
+      merchantSig
+    );
+
+    expect(kofiMerchant.address).to.equal(merchantAddress);
+
+    await usdt.connect(kofiMerchant).approve(sigchainAddress, oneGrand);
+
+    await expect(orderSigProxy.createOrder(order, traderSig, merchantSig))
+      .to.emit(usdt, "Transfer")
+      .withArgs(
+        kofiMerchant.address,
+        await orderSigProxy.getAddress(),
+        oneGrand
+      );
+
+    const payMethodPayload: OrderMethodPayload = {
+      orderHash,
+      method: OrderMethod.pay,
+      expiry,
+    };
+
+    const payOrderMethod: PreparedOrderMethod =
+      makeOrderMethod(payMethodPayload);
+    const payOrderSig = await signOrderMethod(
+      amaTrader,
+      payOrderMethod,
+      domain
+    );
+    //revert for OrderPaidRequired
+    await expect(
+      (appealProxy.connect(kofiMerchant) as any).appealOrder(orderHash)
+    ).to.be.revertedWithCustomError(appealProxy, "OrderPaidRequired");
+
+    await expect(orderSigProxy.payOrder(payOrderMethod, payOrderSig))
+      .to.emit(orderSigProxy, "OrderPaid")
+      .withArgs(orderHash, OrderState.paid);
+
+    //revert for OrderDoesNotExists
+    const nonExistentOrderHash = ethers.ZeroHash;
+    await expect(
+      (appealProxy.connect(kofiMerchant) as any).appealOrder(
+        nonExistentOrderHash
+      )
+    ).to.be.revertedWithCustomError(appealProxy, "OrderDoesNotExists");
+
+    //revert for MustBeMerchantOrTrader
+    await expect(
+      (appealProxy.connect(yaaBrokie) as any).appealOrder(orderHash)
+    ).to.be.revertedWithCustomError(appealProxy, "MustBeMerchantOrTrader");
+    //Passing appeal order
+    await expect(
+      (appealProxy.connect(kofiMerchant) as any).appealOrder(orderHash)
+    )
+      .to.emit(orderSigProxy, "OrderAppealed")
+      .withArgs(
+        orderHash,
+        kofiMerchant.address,
+        AppealDecision.unvoted,
+        OrderState.appealed,
+        anyValue
+      );
+    const [appealsHash] = await viewProxy.appeal(orderHash);
+    expect(appealsHash).to.equal(orderHash);
+
+    //revert for AppealExists
+    await expect(
+      (appealProxy.connect(kofiMerchant) as any).appealOrder(orderHash)
+    ).to.be.revertedWithCustomError(appealProxy, "AppealExists");
+  });
 
   it("Should [Settle Appeal]", async function () {
     const {
