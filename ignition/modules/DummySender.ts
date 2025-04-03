@@ -2,7 +2,7 @@
 // Learn more about it at https://hardhat.org/ignition
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-const SenderModule = buildModule("SenderModule", (m) => {
+const DummySenderModule = buildModule("DummySenderModule", (m) => {
   const dummySender = m.contract("DummySender");
 
   return {
@@ -10,4 +10,4 @@ const SenderModule = buildModule("SenderModule", (m) => {
   };
 });
 
-export default SenderModule;
+export default DummySenderModule;

@@ -2,7 +2,7 @@
 // Learn more about it at https://hardhat.org/ignition
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import IExchangeP2PModule from "../IExchangeP2P";
-import SenderModule from "../Sender";
+import SenderModule from "../DummySender";
 
 const TestToken2Module = buildModule("TestToken2Module", (m) => {
   const { managerProxy } = m.useModule(IExchangeP2PModule);
