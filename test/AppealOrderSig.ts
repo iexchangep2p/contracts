@@ -112,7 +112,7 @@ describe("Appeal Order - OrderSig", function () {
 
     const appealMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.appeal,
       expiry,
     };
 
@@ -229,7 +229,7 @@ describe("Appeal Order - OrderSig", function () {
 
     const appealMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.appeal,
       expiry,
     };
 
@@ -288,7 +288,7 @@ describe("Appeal Order - OrderSig", function () {
 
     const nonExistentMethodPayload: OrderMethodPayload = {
       orderHash: nonExistentOrderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.appeal,
       expiry,
     };
     const nonExistentOrderMethod: PreparedOrderMethod = makeOrderMethod(
@@ -307,7 +307,7 @@ describe("Appeal Order - OrderSig", function () {
     //revert for MustBeMerchantOrTrader
     const notMerchantMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.appeal,
       expiry,
     };
     const notMerchantOrderMethod: PreparedOrderMethod = makeOrderMethod(
@@ -429,7 +429,7 @@ describe("Appeal Order - OrderSig", function () {
 
     const appealMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.appeal,
       expiry,
     };
 
@@ -444,7 +444,7 @@ describe("Appeal Order - OrderSig", function () {
     //revert for OrderAppealedRequired
     const appealedMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.accept,
+      method: OrderMethod.cancelAppeal,
       expiry,
     };
     const appealedOrderMethod: PreparedOrderMethod = makeOrderMethod(
@@ -482,7 +482,7 @@ describe("Appeal Order - OrderSig", function () {
     );
     const nonExistentMethodPayload: OrderMethodPayload = {
       orderHash: nonExistentOrderHash,
-      method: OrderMethod.cancel,
+      method: OrderMethod.cancelAppeal,
       expiry,
     };
     const nonExistentOrderMethod: PreparedOrderMethod = makeOrderMethod(
@@ -500,7 +500,7 @@ describe("Appeal Order - OrderSig", function () {
     //revert for MustBeAppealer
     const notAppealerMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.cancel,
+      method: OrderMethod.cancelAppeal,
       expiry,
     };
     const notAppealerOrderMethod: PreparedOrderMethod = makeOrderMethod(
@@ -518,7 +518,7 @@ describe("Appeal Order - OrderSig", function () {
     //revert for MustBeAppealer
     const invalidAppealerMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.pay,
+      method: OrderMethod.cancelAppeal,
       expiry,
     };
     const invalidAppealerOrderMethod: PreparedOrderMethod = makeOrderMethod(
@@ -536,7 +536,7 @@ describe("Appeal Order - OrderSig", function () {
     //passing cancelAppeal
     const cancelMethodPayload: OrderMethodPayload = {
       orderHash,
-      method: OrderMethod.cancel,
+      method: OrderMethod.cancelAppeal,
       expiry,
     };
     const cancelOrderMethod: PreparedOrderMethod =
