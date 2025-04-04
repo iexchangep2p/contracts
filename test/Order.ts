@@ -7,16 +7,12 @@ import { expect } from "chai";
 import { deployIExchange } from "./IExchangeDeployFixture";
 import {
   createOrderTypedDataHash,
-  encodedCreateOrder,
   iexDomain,
-  iexDomainHash,
   orderSigChain,
   OrderState,
   OrderType,
   sameChainOrder,
-  signOrder,
 } from "../client";
-import { inits } from "../typechain-types/contracts";
 
 describe("Order", function () {
   it("[Create Order, Revert for Create Order]", async function () {
