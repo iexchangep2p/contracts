@@ -1,0 +1,22 @@
+{
+  "IExchangeDiamondModule#AccessControlFacet": "0x2EC1D41f136D535A58F1E035d9b81b5dbc272Def",
+  "IExchangeDiamondModule#AccessControlInit": "0x83E80d11664d41Cd047C4456448E7e034bd5FE43",
+  "IExchangeDiamondModule#DiamondCutFacet": "0x1f5A8E4189314b9Df94bFA385Bd0A31532731d1a",
+  "IExchangeDiamondModule#DiamondInit": "0x8e3AfdE2772c84008eB15CbbA7205c4FB59d9C00",
+  "IExchangeDiamondModule#DiamondLoupeFacet": "0xC64eA7c2F356Ed360ac8A0db1FFf54d241B9b9FD",
+  "IExchangeDiamondModule#OwnershipFacet": "0xC462A657d243Fc900f84f2A0f064666e50E7E595",
+  "IExchangeP2PModule#Appeal": "0x585806388109A2df27CB0881a132f07E251756cc",
+  "IExchangeP2PModule#ExchangeManager": "0x22DA49c11F98A769491D617d79418764e941f647",
+  "IExchangeP2PModule#ExchangeView": "0xAE408A0E3E2B30dBC7037E0DB1Ed906a22f6e34B",
+  "IExchangeP2PModule#IExchangeP2PInit": "0xE4e34F6f79E9307bB2d91A76a1d6533F3e33aD82",
+  "IExchangeP2PModule#Order": "0x2B45461835074f32169993f30c49CF002F1B3E6b",
+  "IExchangeP2PModule#OrderSig": "0x1E9B3B9e2c00bFEfC8e1a3241dA66A16D54Ba677",
+  "IExchangeDiamondModule#IExchangeP2P": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeDiamondModule#IExchangeP2PAccessControl": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeDiamondModule#IExchangeP2PDiamondCutFacet": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeP2PModule#IExchangeP2PAppeal": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeP2PModule#IExchangeP2PExchangeManager": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeP2PModule#IExchangeP2PExchangeView": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeP2PModule#IExchangeP2POrder": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c",
+  "IExchangeP2PModule#IExchangeP2POrderSig": "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c"
+}
