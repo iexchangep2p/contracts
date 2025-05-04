@@ -12,9 +12,11 @@ async function main() {
     1301: "0x3d63fEc287aD7963B614eD873690A745E635D5Fa",
     296: "0x392E10c23E6000910f7785a076FA7B8BC41F315D",
     56: "0x92ba0d7Ae56c902A574117712E12ef1E94BFedeC",
+    42220: "0x72b998C0DD2034FD83fE624972a076AEeAC51b5c"
   };
   const crossChain: { [key: number]: string } = {
     56: "0x9aE7e92505d98b39a082531bE86C69DAC4F0fEF6",
+    42220: "0x95C2160BbB91118C2a1007B9676Ba05659156bD6",
   };
   const chain = Number((await ethers.provider.getNetwork()).chainId);
 
@@ -24,7 +26,7 @@ async function main() {
   );
 
   let tx = await p2pManager.addTradeToken(
-    "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e",
     crossChain[chain],
     BigInt(50)
   );
