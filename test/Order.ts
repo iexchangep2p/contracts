@@ -14,7 +14,7 @@ import {
   sameChainOrder,
 } from "../client";
 
-describe("Order", function () {
+describe("Order", async function () {
   it("[Create Order, Revert for Create Order]", async function () {
     const {
       kofiMerchant,
