@@ -47,6 +47,10 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
     id: "IExchangeP2PAccessControl",
   });
 
+  const oProxy = m.contractAt("OwnershipFacet", iExchangeP2P, {
+    id: "IExchangeP2POwnership",
+  });
+
   const cpiS = functionSigsSelectors("IExchangeP2PInit");
   const cpi = m.contract("IExchangeP2PInit");
   const cpiInit = { contract: cpi, selector: cpiS[INIT_SIG] };
@@ -111,6 +115,7 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
     iExchangeP2P,
     cutProxy,
     acProxy,
+    oProxy,
   };
 });
 
