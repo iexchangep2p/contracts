@@ -15,6 +15,7 @@ export async function deployIExchange() {
     cutProxy,
     acProxy,
     orderSigProxy,
+    oProxy,
   } = await ignition.deploy(IgniteTestModule, {
     displayUi: false,
   });
@@ -73,6 +74,7 @@ export async function deployIExchange() {
     iExchangeP2P,
     cutProxy,
     acProxy,
+    oProxy,
     ixToken,
     oneMil,
     oneGrand,

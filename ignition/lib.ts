@@ -43,3 +43,28 @@ export const FacetCutAction = { Add: 0, Replace: 1, Remove: 2 };
 export const INIT_SIG: string = "init()";
 
 // console.log(functionSigsSelectors("IDiamondCut"), functionSigs("IDiamondCut"), functionSigsSelectors("IDiamondCut"));
+
+export function findAddressWithAllSignatures(
+  functionMap: { [key: string]: string },
+  facetList: any
+): null | string {
+  const targetSignatures = new Set(Object.values(functionMap));
+
+  for (const [address, signatures] of facetList) {
+    const signatureSet = new Set(signatures);
+    let allFound = true;
+
+    for (const sig of targetSignatures) {
+      if (!signatureSet.has(sig)) {
+        allFound = false;
+        break;
+      }
+    }
+
+    if (allFound) {
+      return address;
+    }
+  }
+
+  return null;
+}
