@@ -1,0 +1,215 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ExchangeView",
+  "sourceName": "contracts/modules/ExchangeView.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_orderHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "appeal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "orderHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "appealer",
+              "type": "address"
+            },
+            {
+              "internalType": "enum IAppeal.AppealDecision",
+              "name": "appealDecision",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "createdAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cancelledAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "settler",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "settledAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAppeal.Appeal",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxPaymentTimeLimit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minPaymentTimeLimit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_orderHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "order",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "trader",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "merchant",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "traderChain",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "merchantChain",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "currency",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "paymentMethod",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "enum OrderType",
+              "name": "orderType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum OrderState",
+              "name": "orderState",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "createdAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IOrder.Order",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "tradeToken",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "collectedFees",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "crossChainSender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "orderFee",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct TradeToken",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608080604052346015576106b5908161001b8239f35b600080fdfe608080604052600436101561001357600080fd5b60003560e01c908163a087a8571461055e57508063b70c36071461045a578063cfbc4041146103ff578063e80160ab146101db5763ece1de441461005657600080fd5b346101d65760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d65761008d610646565b50610096610646565b506004356000527fdde41ee27df2f118255a2f19cab8c860a382d1448ec2327858e570d89818304c60205260406000206100ce610626565b81548152600182015460ff602083019173ffffffffffffffffffffffffffffffffffffffff8116835260a01c16604083019060038110156101a7578152600284015493606084019485526003810154916080850192835273ffffffffffffffffffffffffffffffffffffffff6005816004850154169360a0880194855201549460c087019586526040519651875251166020860152519160038310156101a75760e09573ffffffffffffffffffffffffffffffffffffffff936040870152516060860152516080850152511660a08301525160c0820152f35b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b600080fd5b346101d65760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d6576000610160610217610605565b8281528260208201528260408201528260608201528260808201528260a08201528260c08201528260e082015282610100820152826101208201528261014082015201526004356000527f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e39a06020526040600020610292610605565b73ffffffffffffffffffffffffffffffffffffffff825416815273ffffffffffffffffffffffffffffffffffffffff6001830154166020820190815260028301546040830190815260038401546060840190815273ffffffffffffffffffffffffffffffffffffffff60048601541660808501908152600586015460a0860190815260068701549060c0870191825260078801549260ff841660e089019460028210156101a75760ff91865260081c169061010089019560068310156101a757899773ffffffffffffffffffffffffffffffffffffffff600a60088e83978c5201549d6101208c019e8f5261014060098201549c019b8c5201549a6101608d019b8c52816040519d51168d52511660208c01525160408b01525160608a0152511660808801525160a08701525160c08601525160028110156101a75760e0850152519360068510156101a75761018094610100850152516101208401525161014083015251610160820152f35b346101d65760007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d65760207f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e39a154604051908152f35b346101d65760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d65760043573ffffffffffffffffffffffffffffffffffffffff81168091036101d657600060606104b66105b6565b82815282602082015282604082015201526000527f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e399f602052608060406000206104fd6105b6565b73ffffffffffffffffffffffffffffffffffffffff60ff835416151592838352600181015460208401908152606060038460028501541693604087019485520154940193845260405194855251602085015251166040830152516060820152f35b346101d65760007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d6576020907f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e39a2548152f35b604051906080820182811067ffffffffffffffff8211176105d657604052565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b60405190610180820182811067ffffffffffffffff8211176105d657604052565b6040519060e0820182811067ffffffffffffffff8211176105d657604052565b61064e610626565b906000825260006020830152600060408301526000606083015260006080830152600060a0830152600060c083015256fea264697066735822122082d96e695d0777eaf35579525e6b4962b6db14f09fd239a6691488d499e31b5264736f6c634300081c0033",
+  "deployedBytecode": "0x608080604052600436101561001357600080fd5b60003560e01c908163a087a8571461055e57508063b70c36071461045a578063cfbc4041146103ff578063e80160ab146101db5763ece1de441461005657600080fd5b346101d65760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d65761008d610646565b50610096610646565b506004356000527fdde41ee27df2f118255a2f19cab8c860a382d1448ec2327858e570d89818304c60205260406000206100ce610626565b81548152600182015460ff602083019173ffffffffffffffffffffffffffffffffffffffff8116835260a01c16604083019060038110156101a7578152600284015493606084019485526003810154916080850192835273ffffffffffffffffffffffffffffffffffffffff6005816004850154169360a0880194855201549460c087019586526040519651875251166020860152519160038310156101a75760e09573ffffffffffffffffffffffffffffffffffffffff936040870152516060860152516080850152511660a08301525160c0820152f35b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b600080fd5b346101d65760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d6576000610160610217610605565b8281528260208201528260408201528260608201528260808201528260a08201528260c08201528260e082015282610100820152826101208201528261014082015201526004356000527f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e39a06020526040600020610292610605565b73ffffffffffffffffffffffffffffffffffffffff825416815273ffffffffffffffffffffffffffffffffffffffff6001830154166020820190815260028301546040830190815260038401546060840190815273ffffffffffffffffffffffffffffffffffffffff60048601541660808501908152600586015460a0860190815260068701549060c0870191825260078801549260ff841660e089019460028210156101a75760ff91865260081c169061010089019560068310156101a757899773ffffffffffffffffffffffffffffffffffffffff600a60088e83978c5201549d6101208c019e8f5261014060098201549c019b8c5201549a6101608d019b8c52816040519d51168d52511660208c01525160408b01525160608a0152511660808801525160a08701525160c08601525160028110156101a75760e0850152519360068510156101a75761018094610100850152516101208401525161014083015251610160820152f35b346101d65760007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d65760207f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e39a154604051908152f35b346101d65760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d65760043573ffffffffffffffffffffffffffffffffffffffff81168091036101d657600060606104b66105b6565b82815282602082015282604082015201526000527f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e399f602052608060406000206104fd6105b6565b73ffffffffffffffffffffffffffffffffffffffff60ff835416151592838352600181015460208401908152606060038460028501541693604087019485520154940193845260405194855251602085015251166040830152516060820152f35b346101d65760007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101d6576020907f33ea8f700f9ca485fc65a69b25e04c222b4a03289fd0c98ba53848533a3e39a2548152f35b604051906080820182811067ffffffffffffffff8211176105d657604052565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b60405190610180820182811067ffffffffffffffff8211176105d657604052565b6040519060e0820182811067ffffffffffffffff8211176105d657604052565b61064e610626565b906000825260006020830152600060408301526000606083015260006080830152600060a0830152600060c083015256fea264697066735822122082d96e695d0777eaf35579525e6b4962b6db14f09fd239a6691488d499e31b5264736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

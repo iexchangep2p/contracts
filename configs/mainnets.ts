@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { HardhatUserConfig, vars } from "hardhat/config";
 const DEPLOY_KEY_MAIN = vars.get("DEPLOY_KEY_MAIN");
-const BSC_ETHERSCAN_KEY = process.env.BSC_ETHERSCAN_KEY;
+const BSC_ETHERSCAN_KEY = process.env.BSC_ETHERSCAN_KEY!;
 export const mainNetworks: any = {
   base: {
     url: "https://mainnet.base.org",

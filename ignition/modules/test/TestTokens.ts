@@ -17,17 +17,16 @@ const TestTokenModule = buildModule("TestTokenModule", (m) => {
     id: "IXUSDT",
   });
 
-  m.call(managerProxy, "addStakeToken", [usdc, oneGrand]);
   m.call(
     managerProxy,
     "addTradeToken",
-    [usdc, oneMil, oneMil, dummySender, orderFeeBasis, oneGrand],
+    [usdc, dummySender, orderFeeBasis],
     { id: "IXUSDCTradeToken" }
   );
   m.call(
     managerProxy,
     "addTradeToken",
-    [usdt, oneMil, oneMil, dummySender, orderFeeBasis, oneGrand],
+    [usdt, dummySender, orderFeeBasis],
     { id: "IXUSDTTradeToken" }
   );
 

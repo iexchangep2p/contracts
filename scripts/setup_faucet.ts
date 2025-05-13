@@ -51,6 +51,10 @@ async function main() {
       '0xFB7E20739Fa2b8b4351c9F87a1C68b728E7aa614',
       '0xEd64A15A6223588794A976d344990001a065F3f1',
     ],
+    5003: [
+      '0x670a1c39227C2475de0459fAB245111F0f78A4Bf',
+      '0x670a1c39227C2475de0459fAB245111F0f78A4Bf'
+    ]
   };
   const minStakeAmount = BigInt(5 * 1e18);
   const fiveMil = BigInt(minStakeAmount * BigInt(1e6));
@@ -64,7 +68,8 @@ async function main() {
     534351: "0x3ED02478ecf2A46Dd95477270AefD016B7b99ed2",
     44787: "0x171B62C816798F825250d1f43eb5922b0cb9f9eF",
     1301: "0xa9cC3A357091ebeD23F475A0BbA140054E453887",
-    296: "0xa9cC3A357091ebeD23F475A0BbA140054E453887"
+    296: "0xa9cC3A357091ebeD23F475A0BbA140054E453887",
+    5003: "0xEd64A15A6223588794A976d344990001a065F3f1"
   };
   const chain = Number((await ethers.provider.getNetwork()).chainId);
   const token1 = await ethers.getContractAt(
@@ -90,16 +95,16 @@ async function main() {
   //   await delay(5000);
   // }
 
-  for (const t of Object.keys(gasTanks)) {
-    const [s] = await ethers.getSigners();
-    const tx = await s.sendTransaction({
-      to: t,
-      value: ethers.parseEther("0.5"),
-    });
-    console.log(`Just transfered ${tx.hash} to ${t}`);
+  // for (const t of Object.keys(gasTanks)) {
+  //   const [s] = await ethers.getSigners();
+  //   const tx = await s.sendTransaction({
+  //     to: t,
+  //     value: ethers.parseEther("5"),
+  //   });
+  //   console.log(`Just transfered ${tx.hash} to ${t}`);
 
-    await delay(5000);
-  }
+  //   await delay(5000);
+  // }
 
   for (const t of Object.keys(gasTanks)) {
     const w = new ethers.Wallet(gasTanks[t], ethers.provider);

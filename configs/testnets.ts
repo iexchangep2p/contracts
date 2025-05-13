@@ -1,6 +1,7 @@
 import { HardhatUserConfig, vars } from "hardhat/config";
 const DEPLOY_KEY = vars.get("DEPLOY_KEY");
 const ETHERSCAN_KEY = vars.get("ETHERSCAN_KEY");
+const MANTLESCAN_KEY = vars.get("MANTLESCAN_KEY");
 export const testNetworks: any = {
   liskTestnet: {
     url: "https://rpc.sepolia-api.lisk.com",
@@ -48,6 +49,10 @@ export const testNetworks: any = {
     gas: "auto",
     gasPrice: "auto",
     gasMultiplier: 3,
+  },
+  mantleSepolia: {
+    url: "https://rpc.sepolia.mantle.xyz",
+    accounts: [DEPLOY_KEY]
   },
 };
 
@@ -140,6 +145,14 @@ export const testChains: any[] = [
       browserURL: "https://hashscan.io/testnet",
     },
   },
+  {
+    network: 'mantleSepolia',
+    chainId: 5003,
+    urls: {
+      apiURL: 'https://api-sepolia.mantlescan.xyz/api',
+      browserURL: 'https://sepolia.mantlescan.xyz/',
+    },
+  },
 ];
 
 export const testKeys = {
@@ -154,4 +167,5 @@ export const testKeys = {
   hederaTestnet: "anything",
   celoAlfajores: "anything",
   uniSepolia: "anything",
+  mantleSepolia: MANTLESCAN_KEY
 };
