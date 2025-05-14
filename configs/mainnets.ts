@@ -1,5 +1,5 @@
-import 'dotenv/config';
-import { HardhatUserConfig, vars } from "hardhat/config";
+import "dotenv/config";
+import { vars } from "hardhat/config";
 const DEPLOY_KEY_MAIN = vars.get("DEPLOY_KEY_MAIN");
 const BSC_ETHERSCAN_KEY = process.env.BSC_ETHERSCAN_KEY!;
 export const mainNetworks: any = {
@@ -18,7 +18,12 @@ export const mainNetworks: any = {
   bsc: {
     url: "https://bsc-dataseed.binance.org",
     accounts: [DEPLOY_KEY_MAIN],
-  }
+  },
+  lisk: {
+    url: "https://rpc.api.lisk.com",
+    chainId: 1135,
+    accounts: [DEPLOY_KEY_MAIN],
+  },
 };
 
 export const mainChains: any[] = [
@@ -42,7 +47,8 @@ export const mainChains: any[] = [
     network: "celo",
     chainId: 42220,
     urls: {
-      apiURL: "https://celo.blockscout.com/api?apikey=ad32f574-5fa0-4b67-8a54-79be0f54010c",
+      apiURL:
+        "https://celo.blockscout.com/api?apikey=ad32f574-5fa0-4b67-8a54-79be0f54010c",
       browserURL: "https://celo.blockscout.com",
     },
   },
@@ -53,12 +59,21 @@ export const mainChains: any[] = [
       apiURL: "https://api.bscscan.com/api",
       browserURL: "https://bscscan.com",
     },
-  }
+  },
+  {
+    network: "lisk",
+    chainId: 1135,
+    urls: {
+      apiURL: "https://blockscout.lisk.com/api",
+      browserURL: "https://blockscout.lisk.com",
+    },
+  },
 ];
 
 export const mainKeys = {
   base: "anything",
   arbitrum: "anything",
   celo: "anything",
-  bsc: BSC_ETHERSCAN_KEY
+  bsc: BSC_ETHERSCAN_KEY,
+  lisk: "lisk",
 };

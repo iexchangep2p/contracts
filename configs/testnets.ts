@@ -1,4 +1,4 @@
-import { HardhatUserConfig, vars } from "hardhat/config";
+import { vars } from "hardhat/config";
 const DEPLOY_KEY = vars.get("DEPLOY_KEY");
 const ETHERSCAN_KEY = vars.get("ETHERSCAN_KEY");
 const MANTLESCAN_KEY = vars.get("MANTLESCAN_KEY");
