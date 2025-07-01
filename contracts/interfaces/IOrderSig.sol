@@ -59,4 +59,9 @@ abstract contract IOrderSig {
         OrderMethodPayload calldata _method,
         bytes calldata _sig
     ) external virtual;
+
+    function confirmOrder(
+        OrderMethodPayload calldata _method,
+        bytes calldata _sig
+    ) external virtual;
 }

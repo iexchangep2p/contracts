@@ -157,4 +157,19 @@ contract OrderSig is IOrderSig {
         address caller = LibSig._signer(_orderMethodHash, _sig);
         LibAppeal._cancel(_method.orderHash, caller);
     }
+    function confirmOrder(
+        OrderMethodPayload calldata _method,
+        bytes calldata _sig
+    )
+        external
+        virtual
+        override
+        sigNotExpired(_method.expiry)
+        validSig(_sig)
+        onlyOrderMethod(_method.method, OrderMethod.confirm)
+    {
+        bytes32 _orderMethodHash = LibSig._hashOrderMethodEIP712(_method);
+        address caller = LibSig._signer(_orderMethodHash, _sig);
+        LibOrder._confirmOrder(_method.orderHash, caller);
+    }
 }

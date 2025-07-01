@@ -78,11 +78,7 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
   m.call(
     cutProxy,
     "diamondCut",
-    [
-      [odC, aC, emC, evC, osC],
-      cpiInit.contract,
-      cpiInit.selector,
-    ],
+    [[odC, aC, emC, evC, osC], cpiInit.contract, cpiInit.selector],
     { id: "IExchangeP2PDiamondCut" }
   );
 

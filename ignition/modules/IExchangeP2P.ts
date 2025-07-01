@@ -36,7 +36,6 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   const ev = m.contract("ExchangeView");
   const evC = [ev, FacetCutAction.Add, Object.values(evS)];
 
-
   m.call(
     cutProxy,
     "diamondCut",
