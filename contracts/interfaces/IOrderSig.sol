@@ -12,7 +12,8 @@ abstract contract IOrderSig {
         cancel,
         appeal,
         cancelAppeal,
-        settleAppeal
+        settleAppeal,
+        confirm
     }
 
     struct OrderMethodPayload {

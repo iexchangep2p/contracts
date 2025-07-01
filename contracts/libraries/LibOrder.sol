@@ -144,6 +144,10 @@ library LibOrder {
         emit IOrder.OrderPaid(_orderHash, o.orders[_orderHash].orderState);
     }
 
+    function _confirmOrder(bytes32 _orderHash, address _caller) internal {
+        
+    }
+
     function _releaseOrder(bytes32 _orderHash, address _caller) internal {
         OrderStore storage o = OrderStorage.load();
         if (o.orders[_orderHash].createdAt == 0) {
