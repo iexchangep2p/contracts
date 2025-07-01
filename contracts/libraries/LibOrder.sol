@@ -145,7 +145,31 @@ library LibOrder {
     }
 
     function _confirmOrder(bytes32 _orderHash, address _caller) internal {
-        
+        OrderStore storage o = OrderStorage.load();
+        if (o.orders[_orderHash].createdAt == 0) {
+            revert IOrder.OrderDoesNotExists();
+        }
+        if (o.orders[_orderHash].orderType == OrderType.buy) {
+            if (o.orders[_orderHash].orderState != OrderState.accepted) {
+                revert IOrder.OrderAcceptedRequired();
+            }
+            if (_caller != o.orders[_orderHash].merchant) {
+                revert IOrder.MustBeMerchant();
+            }
+        }
+        if (o.orders[_orderHash].orderType == OrderType.sell) {
+            if (
+                o.orders[_orderHash].orderState != OrderState.pending &&
+                o.orders[_orderHash].orderState != OrderState.accepted
+            ) {
+                revert IOrder.OrderPendingOrAcceptedRequired();
+            }
+            if (_caller != o.orders[_orderHash].trader) {
+                revert IOrder.MustBeTrader();
+            }
+        }
+        o.orders[_orderHash].orderState = OrderState.paid;
+        emit IOrder.OrderPaid(_orderHash, o.orders[_orderHash].orderState);
     }
 
     function _releaseOrder(bytes32 _orderHash, address _caller) internal {

@@ -22,6 +22,6 @@ contract OrderBotSig is OrderSig, IOrderBotSig {
     {
         bytes32 _orderMethodHash = LibSig._hashOrderMethodEIP712(_method);
         address caller = LibSig._signer(_orderMethodHash, _sig);
-        LibOrder._payOrder(_method.orderHash, caller);
+        LibOrder._confirmOrder(_method.orderHash, caller);
     }
 }
