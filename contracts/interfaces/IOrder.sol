@@ -83,4 +83,6 @@ abstract contract IOrder {
     function releaseOrder(bytes32 _orderHash) external virtual;
 
     function cancelOrder(bytes32 _orderHash) external virtual;
+
+    function confirmOrder(bytes32 _orderHash) external virtual;
 }

@@ -31,4 +31,8 @@ contract Order is IOrder {
     function cancelOrder(bytes32 _orderHash) external virtual override {
         LibOrder._cancelOrder(_orderHash, msg.sender);
     }
+
+    function confirmOrder(bytes32 _orderHash) external virtual override {
+        LibOrder._confirmOrder(_orderHash, msg.sender);
+    }
 }
