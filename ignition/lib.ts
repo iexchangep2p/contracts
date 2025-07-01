@@ -68,3 +68,5 @@ export function findAddressWithAllSignatures(
 
   return null;
 }
+
+// console.log(functionSigsSelectors("OrderSig"));

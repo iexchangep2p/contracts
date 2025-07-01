@@ -21,7 +21,6 @@ export const mainNetworks: any = {
   },
   lisk: {
     url: "https://rpc.api.lisk.com",
-    chainId: 1135,
     accounts: [DEPLOY_KEY_MAIN],
   },
 };
