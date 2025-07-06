@@ -10,6 +10,7 @@ error ZeroAddress();
 error ZeroNumber();
 error InvalidChainId();
 error InvalidSigner();
+error InvalidBotSigner();
 error InvalidSignature();
 error SignatureExpired();
 error CrossChainUnsupported();

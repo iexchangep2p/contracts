@@ -5,12 +5,14 @@ import "./IExchangeManager.sol";
 import "./IExchangeView.sol";
 import "./IOrder.sol";
 import "./IOrderSig.sol";
+import "./IOrderBotSig.sol";
 import "./IAppeal.sol";
 
 
 abstract contract IExchange is
     IOrder,
     IOrderSig,
+    IOrderBotSig,
     IAppeal,
     IExchangeView,
     IExchangeManager

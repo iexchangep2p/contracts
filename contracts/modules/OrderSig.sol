@@ -6,28 +6,9 @@ import "../libraries/LibOrder.sol";
 import "../libraries/LibAppeal.sol";
 import "../libraries/LibSig.sol";
 import "../globals/Errors.sol";
-contract OrderSig is IOrderSig {
-    modifier validSig(bytes calldata _sig) {
-        if (HelpersLib.compareBytes(_sig, HelpersLib.emptyBytes)) {
-            revert InvalidSignature();
-        }
-        _;
-    }
+import "../globals/OrderHelpers.sol";
 
-    modifier sigNotExpired(uint256 _expiry) {
-        if (_expiry < block.timestamp) {
-            revert SignatureExpired();
-        }
-        _;
-    }
-
-    modifier onlyOrderMethod(OrderMethod _method, OrderMethod _expected) {
-        if (_method != _expected) {
-            revert InvalidOrderMethodCall();
-        }
-        _;
-    }
-
+contract OrderSig is IOrderSig, OrderHelpers {
     function createOrder(
         IOrder.CreateOrder calldata _order,
         bytes calldata _traderSig,

@@ -350,4 +350,9 @@ library LibOrder {
     ) internal pure returns (uint256) {
         return HelpersLib.basisPoint(_amount, _token.orderFee);
     }
+
+    function _get(bytes32 _orderHash) internal view returns(IOrder.Order memory) {
+        OrderStore storage o = OrderStorage.load();
+        return o.orders[_orderHash];
+    }
 }
