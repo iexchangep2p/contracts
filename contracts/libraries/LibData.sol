@@ -38,3 +38,18 @@ library AppealStorage {
         }
     }
 }
+
+struct BotStore {
+    mapping(address => address) merchantBot; // merchant address -> bot trader
+}
+
+library BotStorage {
+    bytes32 constant BOT_STORAGE_POSITION = keccak256("iexchange.global.bot");
+
+    function load() internal pure returns (BotStore storage s) {
+        bytes32 position = BOT_STORAGE_POSITION;
+        assembly {
+            s.slot := position
+        }
+    }
+}
