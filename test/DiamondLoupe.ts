@@ -49,7 +49,7 @@ describe("Diamond", async function () {
   it("Should return total facet addresses", async function () {
     const { facetAddresses } = await loadFixture(deployDiamond);
     facetAddresses.forEach((address, i) => console.log(`${i}. ${address}`));
-    expect(facetAddresses.length).to.equal(9);
+    expect(facetAddresses.length).to.equal(10);
   });
 
   it("Should have the right function selectors", async function () {
@@ -181,12 +181,12 @@ describe("Diamond", async function () {
     expect(facetAddresses[0]).to.equal(
       await diamondLoupeFacet.facetAddress("0x1f931c1c")
     );
-    //DiamondLoupe - [8] - 0xcdffacc6, 0x52ef6b2c
-    expect(facetAddresses[8]).to.equal(
+    //DiamondLoupe - [9] - 0xcdffacc6, 0x52ef6b2c
+    expect(facetAddresses[9]).to.equal(
       await diamondLoupeFacet.facetAddress("0xcdffacc6")
     );
-    //ownership - [7] - 0x8da5cb5b, 0xf2fde38b
-    expect(facetAddresses[7]).to.equal(
+    //ownership - [8] - 0x8da5cb5b, 0xf2fde38b
+    expect(facetAddresses[8]).to.equal(
       await diamondLoupeFacet.facetAddress("0x8da5cb5b")
     );
     //Order - [2] - 0xdfc86408, 0x7489ec23

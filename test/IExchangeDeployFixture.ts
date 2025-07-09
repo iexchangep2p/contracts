@@ -4,7 +4,8 @@ import { ethers, ignition } from "hardhat";
 import IgniteTestModule from "../ignition/modules/test/IgniteTest";
 
 export async function deployIExchange() {
-  const [owner, kofiMerchant, amaTrader, yaaBrokie] = await ethers.getSigners();
+  const [owner, kofiMerchant, amaTrader, yaaBrokie, bot1, bot2, bot3] =
+    await ethers.getSigners();
 
   const {
     orderProxy,
@@ -16,6 +17,7 @@ export async function deployIExchange() {
     acProxy,
     orderSigProxy,
     oProxy,
+    orderBotSigProxy,
   } = await ignition.deploy(IgniteTestModule, {
     displayUi: false,
   });
@@ -85,6 +87,10 @@ export async function deployIExchange() {
     chainId,
     currency2,
     paymentMethod2,
+    bot1,
+    bot2,
+    bot3,
+    orderBotSigProxy,
   };
 }
 

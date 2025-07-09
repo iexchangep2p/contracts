@@ -7,7 +7,13 @@ import {
   AbiCoder,
   concat,
 } from "ethers";
-import { CreateOrder, OrderMethodPayload, OrderType, PreparedOrderMethod } from "./types";
+import {
+  CreateOrder,
+  OrderMethodPayload,
+  OrderType,
+  PreparedOrderMethod,
+} from "./types";
+import { bigint } from "hardhat/internal/core/params/argumentTypes";
 
 export function iexDomain(
   chainId: number,
@@ -142,4 +148,13 @@ export async function signOrderMethod(
     encodedOrderMethodPayload().types,
     orderMethod
   );
+}
+
+export function computeOrderFee(amount: bigint): bigint {
+  if (amount * BigInt(100) > BigInt(10_000)) {
+    const fee = (amount * BigInt(100)) / BigInt(10_000);
+    return fee;
+  } else {
+    return BigInt(0);
+  }
 }
