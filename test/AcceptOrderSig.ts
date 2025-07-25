@@ -186,7 +186,7 @@ describe("Accept OrderSig", function () {
         acceptOrderMethod,
         merchantSigForAccept
       )
-    ).to.not.be.reverted;
+    ).to.emit(orderSigProxy, "OrderAccepted");
 
     //_acceptOrder: revert OrderPendingRequired
     await expect(

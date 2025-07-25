@@ -75,10 +75,14 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
   const ev = m.contract("ExchangeView");
   const evC = [ev, FacetCutAction.Add, Object.values(evS)];
 
+  const botSigS = functionSelectors("OrderBotSig");
+  const botSig = m.contract("OrderBotSig");
+  const botSigC = [botSig, FacetCutAction.Add, Object.values(botSigS)];
+
   m.call(
     cutProxy,
     "diamondCut",
-    [[odC, aC, emC, evC, osC], cpiInit.contract, cpiInit.selector],
+    [[odC, aC, emC, evC, osC, botSigC], cpiInit.contract, cpiInit.selector],
     { id: "IExchangeP2PDiamondCut" }
   );
 
@@ -102,6 +106,10 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
     id: "IExchangeP2PExchangeView",
   });
 
+  const orderBotSigProxy = m.contractAt("OrderBotSig", iExchangeP2P, {
+    id: "IExchangeP2POrderBotSig",
+  });
+
   return {
     orderProxy,
     orderSigProxy,
@@ -112,6 +120,7 @@ const IgniteTestModule = buildModule("IgniteTestModule", (m) => {
     cutProxy,
     acProxy,
     oProxy,
+    orderBotSigProxy,
   };
 });
 
