@@ -3,7 +3,7 @@ import IExchangeP2PModule from "../ignition/modules/IExchangeP2P";
 import TestTokenModule from "../ignition/modules/test/TestTokens";
 
 async function main() {
-  await ignition.deploy(IExchangeP2PModule, { displayUi: true });
+  // await ignition.deploy(IExchangeP2PModule, { displayUi: true });
   await ignition.deploy(TestTokenModule, { displayUi: true });
   console.log(`Deployments Successfull ...`);
 }

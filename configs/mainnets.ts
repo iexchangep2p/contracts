@@ -2,6 +2,7 @@ import "dotenv/config";
 import { vars } from "hardhat/config";
 const DEPLOY_KEY_MAIN = vars.get("DEPLOY_KEY_MAIN");
 const BSC_ETHERSCAN_KEY = process.env.BSC_ETHERSCAN_KEY!;
+const ETHERSCAN_KEY = vars.get("ETHERSCAN_KEY");
 export const mainNetworks: any = {
   base: {
     url: "https://mainnet.base.org",
@@ -21,6 +22,10 @@ export const mainNetworks: any = {
   },
   lisk: {
     url: "https://rpc.api.lisk.com",
+    accounts: [DEPLOY_KEY_MAIN],
+  },
+  mantle: {
+    url: "https://rpc.mantle.xyz",
     accounts: [DEPLOY_KEY_MAIN],
   },
 };
@@ -67,6 +72,14 @@ export const mainChains: any[] = [
       browserURL: "https://blockscout.lisk.com",
     },
   },
+  {
+    network: "mantle",
+    chainId: 5000,
+    urls: {
+      apiURL: "https://api.etherscan.io/v2/api?chainid=5000",
+      browserURL: "https://mantlescan.xyz",
+    },
+  },
 ];
 
 export const mainKeys = {
@@ -75,4 +88,6 @@ export const mainKeys = {
   celo: "anything",
   bsc: BSC_ETHERSCAN_KEY,
   lisk: "lisk",
+  mantle: ETHERSCAN_KEY
+
 };

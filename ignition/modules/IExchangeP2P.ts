@@ -16,30 +16,30 @@ const IExchangeP2PModule = buildModule("IExchangeP2PModule", (m) => {
   const cpi = m.contract("IExchangeP2PInit");
   const cpiInit = { contract: cpi, selector: cpiS[INIT_SIG] };
 
-  const oS = functionSelectors("Order");
-  const o = m.contract("Order");
-  const oC = [o, FacetCutAction.Add, Object.values(oS)];
+  const orderSelectors = functionSelectors("Order");
+  const orderContract = m.contract("Order");
+  const orderCut = [orderContract, FacetCutAction.Add, Object.values(orderSelectors)];
 
-  const osS = functionSelectors("OrderSig");
-  const os = m.contract("OrderSig");
-  const osC = [os, FacetCutAction.Add, Object.values(osS)];
+  const orderSigSelectors = functionSelectors("OrderSig");
+  const orderSigContract = m.contract("OrderSig");
+  const orderSigCut = [orderSigContract, FacetCutAction.Add, Object.values(orderSigSelectors)];
 
-  const aS = functionSelectors("Appeal");
-  const a = m.contract("Appeal");
-  const aC = [a, FacetCutAction.Add, Object.values(aS)];
+  const appealSelectors = functionSelectors("Appeal");
+  const appealContract = m.contract("Appeal");
+  const appealCut = [appealContract, FacetCutAction.Add, Object.values(appealSelectors)];
 
-  const emS = functionSelectors("ExchangeManager");
-  const em = m.contract("ExchangeManager");
-  const emC = [em, FacetCutAction.Add, Object.values(emS)];
+  const managerSelectors = functionSelectors("ExchangeManager");
+  const managerContract = m.contract("ExchangeManager");
+  const managerCut = [managerContract, FacetCutAction.Add, Object.values(managerSelectors)];
 
-  const evS = functionSelectors("ExchangeView");
-  const ev = m.contract("ExchangeView");
-  const evC = [ev, FacetCutAction.Add, Object.values(evS)];
+  const viewSelectors = functionSelectors("ExchangeView");
+  const viewContract = m.contract("ExchangeView");
+  const viewCut = [viewContract, FacetCutAction.Add, Object.values(viewSelectors)];
 
   m.call(
     cutProxy,
     "diamondCut",
-    [[oC, aC, emC, evC, osC], cpiInit.contract, cpiInit.selector],
+    [[orderCut, appealCut, managerCut, viewCut, orderSigCut], cpiInit.contract, cpiInit.selector],
     { id: "IExchangeP2PDiamondCut" }
   );
 

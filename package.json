@@ -1,9 +1,11 @@
 {
   "dependencies": {
+    "@nomicfoundation/hardhat-keystore": "^3.0.1",
     "@openzeppelin/contracts": "^5.2.0",
     "@solidstate/contracts": "^0.0.61",
     "dotenv": "^16.4.7",
-    "hardhat": "^2.22.18"
+    "hardhat": "^2.22.18",
+    "npm": "^11.5.2"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0"

@@ -10,44 +10,44 @@ import {
 
 const IExchangeDiamondModule = buildModule("IExchangeDiamondModule", (m) => {
   const owner = m.getAccount(0);
-  const dc = m.contract("DiamondCutFacet");
-  const iExchangeP2P = m.contract("IExchangeP2P", [owner, dc]);
+  const diamondCutFacet = m.contract("DiamondCutFacet");
+  const iExchangeP2P = m.contract("IExchangeP2P", [owner, diamondCutFacet]);
 
-  const diS = functionSigsSelectors("DiamondInit");
-  const di = m.contract("DiamondInit");
-  const diInit = { contract: di, selector: diS[INIT_SIG] };
+  const diamondInitSelectors = functionSigsSelectors("DiamondInit");
+  const diamondInitContract = m.contract("DiamondInit");
+  const diamondInit = { contract: diamondInitContract, selector: diamondInitSelectors[INIT_SIG] };
 
-  const oS = functionSelectors("OwnershipFacet");
-  const o = m.contract("OwnershipFacet");
-  const oC = [o, FacetCutAction.Add, Object.values(oS)];
+  const ownershipSelectors = functionSelectors("OwnershipFacet");
+  const ownershipContract = m.contract("OwnershipFacet");
+  const ownershipCut = [ownershipContract, FacetCutAction.Add, Object.values(ownershipSelectors)];
 
-  const dlS = functionSelectors("DiamondLoupeFacet");
-  const dl = m.contract("DiamondLoupeFacet");
-  const dlC = [dl, FacetCutAction.Add, Object.values(dlS)];
+  const loupeSelectors = functionSelectors("DiamondLoupeFacet");
+  const loupeContract = m.contract("DiamondLoupeFacet");
+  const loupeCut = [loupeContract, FacetCutAction.Add, Object.values(loupeSelectors)];
 
   const cutProxy = m.contractAt("DiamondCutFacet", iExchangeP2P, {
     id: "IExchangeP2PDiamondCutFacet",
   });
 
-  m.call(cutProxy, "diamondCut", [[oC, dlC], diInit.contract, diInit.selector]);
+  m.call(cutProxy, "diamondCut", [[ownershipCut, loupeCut], diamondInit.contract, diamondInit.selector]);
 
-  const aciS = functionSigsSelectors("AccessControlInit");
-  const aci = m.contract("AccessControlInit");
-  const aciInit = { contract: aci, selector: aciS[INIT_SIG] };
+  const accessControlInitSelectors = functionSigsSelectors("AccessControlInit");
+  const accessControlInitContract = m.contract("AccessControlInit");
+  const accessControlInit = { contract: accessControlInitContract, selector: accessControlInitSelectors[INIT_SIG] };
 
-  const acS = functionSelectors("AccessControlFacet");
-  const ac = m.contract("AccessControlFacet");
-  const acC = [ac, FacetCutAction.Add, Object.values(acS)];
+  const accessControlSelectors = functionSelectors("AccessControlFacet");
+  const accessControlContract = m.contract("AccessControlFacet");
+  const accessControlCut = [accessControlContract, FacetCutAction.Add, Object.values(accessControlSelectors)];
 
-  m.call(cutProxy, "diamondCut", [[acC], aciInit.contract, aciInit.selector], {
+  m.call(cutProxy, "diamondCut", [[accessControlCut], accessControlInit.contract, accessControlInit.selector], {
     id: "AccessControlDiamondCut",
   });
 
-  const acProxy = m.contractAt("AccessControlFacet", iExchangeP2P, {
+  const accessControlProxy = m.contractAt("AccessControlFacet", iExchangeP2P, {
     id: "IExchangeP2PAccessControl",
   });
 
-  return { iExchangeP2P, cutProxy, acProxy };
+  return { iExchangeP2P, cutProxy, accessControlProxy };
 });
 
 export default IExchangeDiamondModule;

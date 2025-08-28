@@ -1,0 +1,75 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "OwnershipFacet",
+  "sourceName": "contracts/diamond/facets/OwnershipFacet.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "owner_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60808060405234601557610260908161001b8239f35b600080fdfe608080604052600436101561001357600080fd5b60003560e01c9081638da5cb5b146101bc575063f2fde38b1461003557600080fd5b346101b75760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101b75760043573ffffffffffffffffffffffffffffffffffffffff81168091036101b7577fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c13205473ffffffffffffffffffffffffffffffffffffffff811690813303610133577fffffffffffffffffffffffff00000000000000000000000000000000000000001682177fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c1320557f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0600080a3005b60846040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602260248201527f4c69624469616d6f6e643a204d75737420626520636f6e7472616374206f776e60448201527f65720000000000000000000000000000000000000000000000000000000000006064820152fd5b600080fd5b346101b75760007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101b75760209073ffffffffffffffffffffffffffffffffffffffff7fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c132054168152f3fea26469706673582212202169dc0c5afe78305e71cddccf2428337cd3d280c22805b956cc6d9e331ef9c464736f6c634300081c0033",
+  "deployedBytecode": "0x608080604052600436101561001357600080fd5b60003560e01c9081638da5cb5b146101bc575063f2fde38b1461003557600080fd5b346101b75760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101b75760043573ffffffffffffffffffffffffffffffffffffffff81168091036101b7577fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c13205473ffffffffffffffffffffffffffffffffffffffff811690813303610133577fffffffffffffffffffffffff00000000000000000000000000000000000000001682177fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c1320557f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0600080a3005b60846040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602260248201527f4c69624469616d6f6e643a204d75737420626520636f6e7472616374206f776e60448201527f65720000000000000000000000000000000000000000000000000000000000006064820152fd5b600080fd5b346101b75760007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126101b75760209073ffffffffffffffffffffffffffffffffffffffff7fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c132054168152f3fea26469706673582212202169dc0c5afe78305e71cddccf2428337cd3d280c22805b956cc6d9e331ef9c464736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

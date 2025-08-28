@@ -4,6 +4,7 @@ import { testChains, testKeys, testNetworks } from "./configs/testnets";
 import { mainChains, mainKeys, mainNetworks } from "./configs/mainnets";
 
 const config: HardhatUserConfig = {
+  
   solidity: {
     version: "0.8.28",
     settings: {

@@ -133,8 +133,8 @@ export const testChains: any[] = [
     network: "opTestnet",
     chainId: 11155420,
     urls: {
-      apiURL: "https://sepolia-optimistic.etherscan.io/api",
-      browserURL: "https://sepolia-optimistic.etherscan.io",
+      apiURL: "https://api.etherscan.io/v2/api?chainid=11155420",
+      browserURL: "https://optimism-sepolia.blockscout.com",
     },
   },
   {
